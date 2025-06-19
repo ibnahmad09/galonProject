@@ -10,7 +10,7 @@ class Product extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name', 'price', 'description', 'image'
+        'name', 'price', 'description', 'image', 'category'
     ];
 
     public function orders()

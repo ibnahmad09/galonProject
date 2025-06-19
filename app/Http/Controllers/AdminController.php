@@ -6,6 +6,7 @@ use App\Models\Product;
 use App\Models\Order;
 use App\Models\Promotion;
 use App\Models\StockMutation;
+use App\Models\News;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
@@ -24,10 +25,10 @@ class AdminController extends Controller
         $totalProducts = Product::count();
         $pendingOrders = Order::where('status', 'pending')->count();
         $recentOrders = Order::with('user')->orderBy('created_at', 'desc')->take(5)->get();
-        
+
         return view('admin.dashboard', compact(
-            'totalOrders', 
-            'totalProducts', 
+            'totalOrders',
+            'totalProducts',
             'pendingOrders',
             'recentOrders'
         ));
@@ -155,9 +156,68 @@ class AdminController extends Controller
         if ($product->image) {
             Storage::delete('public/'.$product->image);
         }
-        
+
         $product->delete();
-        
+
         return redirect()->route('admin.products')->with('success', 'Produk berhasil dihapus');
+    }
+
+    // --- Berita/Informasi ---
+    public function newsIndex()
+    {
+        $news = News::orderBy('published_at', 'desc')->paginate(10);
+        return view('admin.news.index', compact('news'));
+    }
+
+    public function newsCreate()
+    {
+        return view('admin.news.create');
+    }
+
+    public function newsStore(Request $request)
+    {
+        $validated = $request->validate([
+            'title' => 'required',
+            'content' => 'required',
+            'image' => 'nullable|image',
+            'published_at' => 'nullable|date',
+        ]);
+        if ($request->hasFile('image')) {
+            $validated['image'] = $request->file('image')->store('news', 'public');
+        }
+        News::create($validated);
+        return redirect()->route('admin.news.index')->with('success', 'Berita berhasil ditambahkan');
+    }
+
+    public function newsEdit($id)
+    {
+        $news = News::findOrFail($id);
+        return view('admin.news.edit', compact('news'));
+    }
+
+    public function newsUpdate(Request $request, $id)
+    {
+        $news = News::findOrFail($id);
+        $validated = $request->validate([
+            'title' => 'required',
+            'content' => 'required',
+            'image' => 'nullable|image',
+            'published_at' => 'nullable|date',
+        ]);
+        if ($request->hasFile('image')) {
+            $validated['image'] = $request->file('image')->store('news', 'public');
+        }
+        $news->update($validated);
+        return redirect()->route('admin.news.index')->with('success', 'Berita berhasil diupdate');
+    }
+
+    public function newsDestroy($id)
+    {
+        $news = News::findOrFail($id);
+        if ($news->image) {
+            Storage::delete('public/'.$news->image);
+        }
+        $news->delete();
+        return redirect()->route('admin.news.index')->with('success', 'Berita berhasil dihapus');
     }
 }

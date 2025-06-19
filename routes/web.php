@@ -40,19 +40,25 @@ Route::prefix('admin')->middleware('admin')->group(function () {
     Route::get('/products/{product}/edit', [AdminController::class, 'editProduct'])->name('admin.products.edit');
     Route::put('/products/{product}', [AdminController::class, 'updateProduct'])->name('admin.products.update');
     Route::delete('/products/{product}', [AdminController::class, 'destroyProduct'])->name('admin.products.destroy');
+    Route::get('/news', [AdminController::class, 'newsIndex'])->name('admin.news.index');
+    Route::get('/news/create', [AdminController::class, 'newsCreate'])->name('admin.news.create');
+    Route::post('/news', [AdminController::class, 'newsStore'])->name('admin.news.store');
+    Route::get('/news/{id}/edit', [AdminController::class, 'newsEdit'])->name('admin.news.edit');
+    Route::put('/news/{id}', [AdminController::class, 'newsUpdate'])->name('admin.news.update');
+    Route::delete('/news/{id}', [AdminController::class, 'newsDestroy'])->name('admin.news.destroy');
 });
 
 // Customer Routes
 Route::prefix('customer')->middleware('customer')->group(function () {
     Route::get('/dashboard', [CustomerController::class, 'dashboard'])->name('customer.dashboard');
+    Route::get('/products', [CustomerController::class, 'products'])->name('customer.products');
     Route::get('/product/{id}', [CustomerController::class, 'productDetail'])->name('customer.product.detail');
     Route::get('/cart', [CartController::class, 'cart'])->name('customer.cart');
     Route::post('/cart/add/{id}', [CartController::class, 'addToCart'])->name('cart.add');
     Route::post('/cart/update', [CartController::class, 'updateCart'])->name('cart.update');
     Route::get('/cart/remove/{id}', [CartController::class, 'removeFromCart'])->name('cart.remove');
     Route::get('/checkout', [CustomerController::class, 'checkout'])->name('customer.checkout');
-    Route::post('/order/place', [OrderController::class, 'placeOrder'])->name('order.place');
-    Route::get('/orders', [CustomerController::class, 'orderHistory'])->name('customer.order.history');
+    Route::get('/order-history', [CustomerController::class, 'orderHistory'])->name('customer.order.history');
 });
 
 // Courier Routes

@@ -8,6 +8,7 @@ use App\Models\Promotion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Cart;
+use App\Models\News;
 
 class CustomerController extends Controller
 {
@@ -19,9 +20,12 @@ class CustomerController extends Controller
     // Halaman Utama Customer
     public function dashboard()
     {
+        $user = auth()->user();
+        $orders = $user->orders()->orderBy('created_at', 'desc')->get();
         $products = Product::all();
-        $promotions = Promotion::where('end_date', '>', now())->get();
-        return view('customer.dashboard', compact('products', 'promotions'));
+        $promotions = Promotion::with('product')->where('end_date', '>=', now())->get();
+        $news = News::orderBy('published_at', 'desc')->take(3)->get();
+        return view('customer.dashboard', compact('user', 'orders', 'products', 'promotions', 'news'));
     }
 
     // Detail Produk
@@ -47,5 +51,15 @@ class CustomerController extends Controller
     {
         $orders = Order::where('user_id', Auth::id())->orderBy('created_at', 'desc')->get();
         return view('customer.order-history', compact('orders'));
+    }
+
+    public function products(Request $request)
+    {
+        $category = $request->query('category');
+        $products = Product::when($category, function ($query, $category) {
+            return $query->where('category', $category);
+        })->get();
+
+        return view('customer.products', compact('products', 'category'));
     }
 }
