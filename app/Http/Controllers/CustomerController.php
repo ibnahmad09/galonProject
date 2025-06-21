@@ -25,7 +25,9 @@ class CustomerController extends Controller
         $products = Product::all();
         $promotions = Promotion::with('product')->where('end_date', '>=', now())->get();
         $news = News::orderBy('published_at', 'desc')->take(3)->get();
-        return view('customer.dashboard', compact('user', 'orders', 'products', 'promotions', 'news'));
+        $referrals = \App\Models\User::where('referred_by', $user->referral_code)->get();
+        $referralCount = $referrals->count();
+        return view('customer.dashboard', compact('user', 'orders', 'products', 'promotions', 'news', 'referrals', 'referralCount'));
     }
 
     // Detail Produk
@@ -49,7 +51,7 @@ class CustomerController extends Controller
     // Riwayat Pesanan
     public function orderHistory()
     {
-        $orders = Order::where('user_id', Auth::id())->orderBy('created_at', 'desc')->get();
+        $orders = Order::with(['details.product', 'delivery'])->where('user_id', Auth::id())->orderBy('created_at', 'desc')->get();
         return view('customer.order-history', compact('orders'));
     }
 

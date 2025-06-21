@@ -10,11 +10,12 @@ class Delivery extends Model
     use HasFactory;
 
     protected $fillable = [
-        'order_id', 'courier_id', 'status', 'tracking_number'
+        'order_id', 'courier_id', 'status', 'tracking_number', 'notes'
     ];
 
     protected $attributes = [
         'courier_id' => null,
+        'status' => 'pending',
     ];
 
     public function order()

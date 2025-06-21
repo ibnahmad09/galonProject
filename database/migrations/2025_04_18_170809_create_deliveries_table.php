@@ -11,9 +11,10 @@ class CreateDeliveriesTable extends Migration
         Schema::create('deliveries', function (Blueprint $table) {
             $table->id();
             $table->foreignId('order_id')->constrained()->onDelete('cascade');
-            $table->foreignId('courier_id')->constrained('users')->onDelete('cascade');
-            $table->enum('status', ['on_route', 'delivered']);
+            $table->foreignId('courier_id')->nullable()->constrained('users')->onDelete('cascade');
+            $table->enum('status', ['pending', 'assigned', 'picked_up', 'on_way', 'delivered', 'failed'])->default('pending');
             $table->string('tracking_number')->unique();
+            $table->text('notes')->nullable();
             $table->timestamps();
         });
     }

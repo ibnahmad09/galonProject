@@ -142,6 +142,30 @@
     </div>
 </div>
 
+<!-- Referral Section -->
+<div class="bg-white p-4 rounded-lg shadow mb-6">
+    <h2 class="text-xl font-bold mb-2">Kode Referral Anda</h2>
+    <div class="flex items-center gap-2 mb-2">
+        <span class="font-mono text-lg bg-gray-100 px-3 py-1 rounded">{{ Auth::user()->referral_code }}</span>
+        <button onclick="navigator.clipboard.writeText('{{ Auth::user()->referral_code }}')" class="text-blue-600 hover:underline">Salin</button>
+    </div>
+    <p class="text-sm text-gray-500 mb-2">Bagikan kode ini ke teman Anda. Jika mereka mendaftar dengan kode ini, Anda akan mendapatkan benefit khusus!</p>
+    <div class="mt-4">
+        <span class="font-semibold">Jumlah Referral Berhasil: </span>
+        <span class="text-blue-700 font-bold">{{ $referralCount }}</span>
+    </div>
+    @if($referralCount > 0)
+    <div class="mt-2">
+        <span class="font-semibold">Daftar Referral:</span>
+        <ul class="list-disc ml-6 text-sm mt-1">
+            @foreach($referrals as $ref)
+                <li>{{ $ref->name }} ({{ $ref->email }})</li>
+            @endforeach
+        </ul>
+    </div>
+    @endif
+</div>
+
 <script>
 function addToCart(productId) {
     fetch(`/cart/add/${productId}`, {

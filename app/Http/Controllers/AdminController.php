@@ -7,6 +7,9 @@ use App\Models\Order;
 use App\Models\Promotion;
 use App\Models\StockMutation;
 use App\Models\News;
+use App\Models\Delivery;
+use App\Models\Notification;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
@@ -26,11 +29,19 @@ class AdminController extends Controller
         $pendingOrders = Order::where('status', 'pending')->count();
         $recentOrders = Order::with('user')->orderBy('created_at', 'desc')->take(5)->get();
 
+        // Statistik pengiriman
+        $pendingDeliveries = Delivery::where('status', 'pending')->count();
+        $activeDeliveries = Delivery::whereIn('status', ['assigned', 'picked_up', 'on_way'])->count();
+        $completedDeliveries = Delivery::where('status', 'delivered')->count();
+
         return view('admin.dashboard', compact(
             'totalOrders',
             'totalProducts',
             'pendingOrders',
-            'recentOrders'
+            'recentOrders',
+            'pendingDeliveries',
+            'activeDeliveries',
+            'completedDeliveries'
         ));
     }
 
@@ -111,17 +122,106 @@ class AdminController extends Controller
     // Manajemen Pesanan
     public function orders()
     {
-        $orders = Order::with('user', 'details.product')->orderBy('created_at', 'desc')->get();
-        return view('admin.orders.index', compact('orders'));
+        $orders = Order::with(['user', 'details.product', 'delivery.courier'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(15);
+
+        $couriers = User::where('role', 'courier')->get();
+
+        return view('admin.orders.index', compact('orders', 'couriers'));
+    }
+
+    public function orderDetail($id)
+    {
+        $order = Order::with(['user', 'details.product', 'delivery.courier'])->findOrFail($id);
+        $couriers = User::where('role', 'courier')->get();
+
+        return view('admin.orders.detail', compact('order', 'couriers'));
     }
 
     public function updateOrderStatus(Request $request, $id)
     {
         $order = Order::findOrFail($id);
+        $oldStatus = $order->status;
         $order->status = $request->status;
         $order->save();
 
+        // Jika status berubah menjadi 'processing', kirim notifikasi ke semua kurir
+        if ($request->status == 'processing' && $oldStatus != 'processing') {
+            $this->notifyCouriersForDelivery($order);
+        }
+
         return redirect()->back()->with('success', 'Status pesanan diperbarui');
+    }
+
+    // Assign Courier
+    public function assignCourier(Request $request, $orderId)
+    {
+        $request->validate([
+            'courier_id' => 'required|exists:users,id'
+        ]);
+
+        $order = Order::findOrFail($orderId);
+        $delivery = $order->delivery;
+        $oldCourierId = $delivery->courier_id;
+
+        $delivery->courier_id = $request->courier_id;
+        $delivery->status = 'assigned';
+        $delivery->save();
+
+        // Kirim notifikasi ke kurir yang ditugaskan
+        $courier = User::find($request->courier_id);
+        Notification::create([
+            'user_id' => $request->courier_id,
+            'title' => 'Pengiriman Baru Ditugaskan',
+            'message' => 'Anda ditugaskan untuk mengirim pesanan #' . $order->order_number . ' ke ' . $order->user->name,
+            'type' => 'delivery_assigned'
+        ]);
+
+        // Jika ada kurir lama, kirim notifikasi pembatalan
+        if ($oldCourierId && $oldCourierId != $request->courier_id) {
+            Notification::create([
+                'user_id' => $oldCourierId,
+                'title' => 'Pengiriman Dibatalkan',
+                'message' => 'Pengiriman pesanan #' . $order->order_number . ' telah ditugaskan ke kurir lain',
+                'type' => 'delivery_cancelled'
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Kurir berhasil ditugaskan');
+    }
+
+    // Notifikasi ke semua kurir
+    private function notifyCouriersForDelivery($order)
+    {
+        $couriers = User::where('role', 'courier')->get();
+
+        foreach ($couriers as $courier) {
+            Notification::create([
+                'user_id' => $courier->id,
+                'title' => 'Pengiriman Baru Tersedia',
+                'message' => 'Ada pengiriman baru untuk pesanan #' . $order->order_number . ' dari ' . $order->user->name,
+                'type' => 'new_delivery_available'
+            ]);
+        }
+    }
+
+    // Manajemen Pengiriman
+    public function deliveries()
+    {
+        $deliveries = Delivery::with(['order.user', 'courier'])
+            ->orderBy('created_at', 'desc')
+            ->paginate(15);
+
+        return view('admin.deliveries.index', compact('deliveries'));
+    }
+
+    public function deliveryDetail($id)
+    {
+        $delivery = Delivery::with(['order.user', 'order.details.product', 'courier'])
+            ->findOrFail($id);
+
+        return view('admin.deliveries.detail', compact('delivery'));
     }
 
     // Manajemen Promosi
@@ -136,18 +236,6 @@ class AdminController extends Controller
     {
         $mutations = StockMutation::with('product')->orderBy('created_at', 'desc')->get();
         return view('admin.stock.index', compact('mutations'));
-    }
-
-    // Di AdminController.php
-    public function assignCourier(Request $request, $orderId)
-    {
-        $order = Order::findOrFail($orderId);
-        $delivery = $order->delivery;
-
-        $delivery->courier_id = $request->courier_id;
-        $delivery->save();
-
-        return redirect()->back()->with('success', 'Kurir berhasil ditugaskan');
     }
 
     public function destroyProduct(Product $product)

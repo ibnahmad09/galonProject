@@ -58,6 +58,13 @@
                     </a>
                 </li>
             </ul>
+            <form method="POST" action="{{ route('logout') }}" class="mt-8">
+                @csrf
+                <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white p-3 rounded flex items-center justify-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a2 2 0 01-2 2H7a2 2 0 01-2-2V7a2 2 0 012-2h4a2 2 0 012 2v1"></path></svg>
+                    Logout
+                </button>
+            </form>
         </div>
         <!-- Content -->
         <div class="flex-1 p-6 overflow-y-auto md:ml-0 mt-0">

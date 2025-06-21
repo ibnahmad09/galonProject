@@ -50,9 +50,9 @@ class OrderController extends Controller
         $delivery = new Delivery();
         $delivery->order_id = $order->id;
         $delivery->tracking_number = 'TRK-' . uniqid();
-        $delivery->status = 'on_route';
+        $delivery->status = 'pending';
         $delivery->save();
-        
+
         session()->forget('cart');
         return redirect()->route('customer.order.history')->with('success', 'Pesanan berhasil dibuat');
     }

@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CartController;
@@ -35,8 +36,12 @@ Route::prefix('admin')->middleware('admin')->group(function () {
     Route::get('/products/create', [AdminController::class, 'createProduct'])->name('admin.products.create');
     Route::post('/products', [AdminController::class, 'storeProduct'])->name('admin.products.store');
     Route::get('/orders', [AdminController::class, 'orders'])->name('admin.orders');
-    Route::get('/promotions', [AdminController::class, 'promotions'])->name('admin.promotions');
+    Route::get('/orders/{id}', [AdminController::class, 'orderDetail'])->name('admin.order.detail');
     Route::post('/orders/{id}/status', [AdminController::class, 'updateOrderStatus'])->name('admin.orders.updateStatus');
+    Route::post('/orders/{orderId}/assign-courier', [AdminController::class, 'assignCourier'])->name('admin.assign.courier');
+    Route::get('/deliveries', [AdminController::class, 'deliveries'])->name('admin.deliveries');
+    Route::get('/deliveries/{id}', [AdminController::class, 'deliveryDetail'])->name('admin.delivery.detail');
+    Route::get('/promotions', [AdminController::class, 'promotions'])->name('admin.promotions');
     Route::get('/products/{product}/edit', [AdminController::class, 'editProduct'])->name('admin.products.edit');
     Route::put('/products/{product}', [AdminController::class, 'updateProduct'])->name('admin.products.update');
     Route::delete('/products/{product}', [AdminController::class, 'destroyProduct'])->name('admin.products.destroy');
@@ -64,7 +69,13 @@ Route::prefix('customer')->middleware('customer')->group(function () {
 // Courier Routes
 Route::prefix('courier')->middleware('courier')->group(function () {
     Route::get('/dashboard', [CourierController::class, 'dashboard'])->name('courier.dashboard');
-    Route::post('/delivery/{id}/status', [CourierController::class, 'updateDeliveryStatus'])->name('courier.delivery.updateStatus');
+    Route::get('/deliveries', [CourierController::class, 'deliveries'])->name('courier.deliveries');
+    Route::get('/delivery/{id}', [CourierController::class, 'deliveryDetail'])->name('courier.delivery-detail');
+    Route::post('/delivery/{id}/status', [CourierController::class, 'updateDeliveryStatus'])->name('courier.update-delivery-status');
+    Route::get('/available-deliveries', [CourierController::class, 'availableDeliveries'])->name('courier.available-deliveries');
+    Route::post('/delivery/{id}/accept', [CourierController::class, 'acceptDelivery'])->name('courier.accept-delivery');
+    Route::get('/delivery-history', [CourierController::class, 'deliveryHistory'])->name('courier.delivery-history');
+    Route::post('/notifications/{id}/mark-read', [CourierController::class, 'markNotificationAsRead'])->name('courier.notifications.mark-read');
 });
 
 // Promotions
@@ -78,5 +89,5 @@ Route::get('/notifications/{id}/read', [NotificationController::class, 'markAsRe
 Route::get('/admin/stock', [StockMutationController::class, 'index'])->name('admin.stock');
 Route::post('/admin/stock/restock', [StockMutationController::class, 'restock'])->name('admin.stock.restock');
 
-// Assign Courier
-Route::post('/admin/orders/{orderId}/assign-courier', [AdminController::class, 'assignCourier'])->name('admin.assign.courier');
+// Order Place
+Route::post('/order/place', [OrderController::class, 'placeOrder'])->name('order.place');

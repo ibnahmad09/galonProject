@@ -61,6 +61,11 @@
                             </div>
                         </div>
 
+                        <div class="mb-4">
+                            <label class="block mb-1 font-semibold">Kode Referral (opsional)</label>
+                            <input type="text" name="referred_by" class="w-full border p-2 rounded" value="{{ old('referred_by') }}">
+                        </div>
+
                         <div class="row mb-0">
                             <div class="col-md-6 offset-md-4">
                                 <button type="submit" class="btn btn-primary">

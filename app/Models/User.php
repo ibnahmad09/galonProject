@@ -24,6 +24,8 @@ class User extends Authenticatable
         'role',
         'phone',
         'address',
+        'referral_code',
+        'referred_by',
     ];
 
     /**
@@ -45,7 +47,7 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
-    
+
     public function orders()
     {
         return $this->hasMany(Order::class);
@@ -54,5 +56,10 @@ class User extends Authenticatable
     public function deliveries()
     {
         return $this->hasMany(Delivery::class, 'courier_id');
+    }
+
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class);
     }
 }

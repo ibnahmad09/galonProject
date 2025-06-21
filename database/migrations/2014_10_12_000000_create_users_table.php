@@ -19,6 +19,8 @@ return new class extends Migration {
             $table->enum('role', ['customer', 'admin', 'courier']);
             $table->string('phone')->nullable();
             $table->text('address')->nullable();
+            $table->string('referral_code')->unique()->nullable();
+            $table->string('referred_by')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

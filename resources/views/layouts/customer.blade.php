@@ -11,6 +11,7 @@
 <body class="bg-gray-100">
     <!-- Header -->
     <nav class="bg-blue-600 p-4">
+
         <div class="container mx-auto flex justify-between items-center">
             <a href="{{ route('customer.dashboard') }}" class="text-white text-2xl font-bold">Depot Air Minum</a>
 
@@ -29,6 +30,8 @@
                         @endif
                     </a>
                 </div>
+                <!-- Menu Riwayat Pesanan -->
+                <a href="{{ route('customer.order.history') }}" class="text-white font-bold hover:underline">Riwayat Pesanan</a>
                 <!-- Tombol Logout -->
                 <form action="{{ route('logout') }}" method="POST">
                     @csrf

@@ -10,20 +10,22 @@ class CartController extends Controller
     public function addToCart(Request $request, $id)
     {
         $product = Product::findOrFail($id);
-        
+
         $cart = session()->get('cart', []);
-        
+
+        $quantity = $request->input('quantity', 1);
+
         if (isset($cart[$id])) {
-            $cart[$id]['quantity']++;
+            $cart[$id]['quantity'] += $quantity;
         } else {
             $cart[$id] = [
                 'name' => $product->name,
-                'quantity' => 1,
+                'quantity' => $quantity,
                 'price' => $product->price,
                 'image' => $product->image
             ];
         }
-        
+
         session()->put('cart', $cart);
         return redirect()->back()->with('success', 'Produk ditambahkan ke keranjang');
     }
