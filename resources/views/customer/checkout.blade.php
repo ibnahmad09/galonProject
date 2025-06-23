@@ -3,7 +3,7 @@
 @section('content')
 <div class="bg-white p-6 rounded-lg shadow">
     <h2 class="text-2xl font-bold mb-6">Checkout</h2>
-    
+
     <form action="{{ route('order.place') }}" method="POST">
         @csrf
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -55,6 +55,10 @@
                 <label class="flex items-center">
                     <input type="radio" name="payment_method" value="Transfer" class="mr-2">
                     Transfer Bank
+                </label>
+                <label class="flex items-center">
+                    <input type="radio" name="payment_method" value="Midtrans" class="mr-2">
+                    Midtrans (Virtual Account, e-Wallet, dll)
                 </label>
             </div>
         </div>

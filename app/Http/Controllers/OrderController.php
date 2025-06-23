@@ -9,6 +9,8 @@ use App\Models\Product;
 use App\Models\StockMutation;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Delivery;
+use Midtrans\Snap;
+use Midtrans\Config;
 
 class OrderController extends Controller
 {
@@ -33,7 +35,7 @@ class OrderController extends Controller
         $order->total_price = $totalPrice;
         $order->payment_method = $request->payment_method;
         $order->delivery_address = $request->delivery_address;
-        $order->status = 'pending';
+        $order->status = $request->payment_method == 'Midtrans' ? 'unpaid' : 'pending';
         $order->save();
 
         foreach ($cartItems as $itemId => $item) {
@@ -52,6 +54,31 @@ class OrderController extends Controller
         $delivery->tracking_number = 'TRK-' . uniqid();
         $delivery->status = 'pending';
         $delivery->save();
+
+        if ($request->payment_method == 'Midtrans') {
+            // Konfigurasi Midtrans
+            Config::$serverKey = env('MIDTRANS_SERVER_KEY');
+            Config::$isProduction = false; // Ganti true jika production
+            Config::$isSanitized = true;
+            Config::$is3ds = true;
+
+            $params = [
+                'transaction_details' => [
+                    'order_id' => $order->order_number,
+                    'gross_amount' => $totalPrice,
+                ],
+                'customer_details' => [
+                    'first_name' => Auth::user()->name,
+                    'email' => Auth::user()->email,
+                    'phone' => $request->phone,
+                    'address' => $request->delivery_address,
+                ],
+            ];
+
+            $snapToken = Snap::getSnapToken($params);
+            session()->forget('cart');
+            return view('customer.midtrans-payment', compact('snapToken', 'order'));
+        }
 
         session()->forget('cart');
         return redirect()->route('customer.order.history')->with('success', 'Pesanan berhasil dibuat');

@@ -185,4 +185,13 @@ return [
         // 'Example' => App\Facades\Example::class,
     ])->toArray(),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Midtrans Payment
+    |--------------------------------------------------------------------------
+    | Tambahkan di .env:
+    | MIDTRANS_SERVER_KEY=your_server_key
+    | MIDTRANS_CLIENT_KEY=your_client_key
+    */
+
 ];
