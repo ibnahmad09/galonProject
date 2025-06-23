@@ -26,9 +26,9 @@
 <!-- Produk Terlaris -->
 <div>
     <h2 class="text-xl font-bold mb-4">Produk Kami</h2>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div class="flex overflow-x-auto gap-4 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-4 hide-scrollbar pb-2">
         @foreach($products as $product)
-        <div class="bg-white p-4 rounded-lg shadow relative">
+        <div class="min-w-[250px] max-w-xs w-full bg-white p-4 rounded-lg shadow relative flex-shrink-0 md:min-w-0 md:max-w-none">
             <img src="{{ asset('storage/'.$product->image) }}" alt="{{ $product->name }}"
                  class="w-full h-48 object-cover rounded mb-4">
             <h3 class="font-bold">{{ $product->name }}</h3>
@@ -49,77 +49,21 @@
 <!-- Informasi/Berita Section -->
 <div class="mb-6">
     <h2 class="text-xl font-bold mb-4">Informasi & Berita</h2>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div class="flex overflow-x-auto gap-4 sm:grid sm:grid-cols-2 lg:grid-cols-3 sm:gap-4 hide-scrollbar pb-2">
         @forelse($news as $item)
-        <div class="bg-white p-4 rounded-lg shadow">
+        <div class="min-w-[250px] max-w-xs w-full bg-white p-4 rounded-lg shadow flex flex-col h-full flex-shrink-0 sm:min-w-0 sm:max-w-none">
             @if($item->image)
-                <img src="{{ asset('storage/'.$item->image) }}" class="mb-2 w-full h-32 object-cover rounded">
+                <div class="w-full aspect-w-16 aspect-h-9 mb-2">
+                    <img src="{{ asset('storage/'.$item->image) }}" class="w-full h-full object-cover rounded" loading="lazy" alt="{{ $item->title }}">
+                </div>
             @endif
-            <h3 class="text-lg font-bold">{{ $item->title }}</h3>
-            <p class="text-sm text-gray-500">{{ Str::limit(strip_tags($item->content), 100) }}</p>
+            <h3 class="text-lg font-bold mb-1 line-clamp-2">{{ $item->title }}</h3>
+            <p class="text-sm text-gray-500 flex-1 line-clamp-3">{{ Str::limit(strip_tags($item->content), 100) }}</p>
             <p class="text-xs text-gray-400 mt-2">{{ $item->published_at ? date('d M Y', strtotime($item->published_at)) : '' }}</p>
         </div>
         @empty
-        <div class="col-span-3 text-center text-gray-500">Belum ada berita/informasi.</div>
+        <div class="col-span-full text-center text-gray-500">Belum ada berita/informasi.</div>
         @endforelse
-    </div>
-</div>
-
-<!-- Tracking Status Pesanan -->
-<div class="mb-6">
-    <h2 class="text-xl font-bold mb-4">Status Pesanan</h2>
-    <div class="bg-white p-6 rounded-lg shadow">
-        <table class="w-full">
-            <thead>
-                <tr>
-                    <th class="text-left pb-4">No. Pesanan</th>
-                    <th class="text-left pb-4">Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if($orders->count() > 0)
-                    @foreach($orders as $order)
-                    <tr class="border-b hover:bg-gray-50">
-                        <td class="py-4">{{ $order->order_number }}</td>
-                        <td>
-                            <span class="px-2 py-1 rounded {{
-                                $order->status == 'pending' ? 'bg-yellow-200 text-yellow-800' :
-                                ($order->status == 'delivered' ? 'bg-green-200 text-green-800' : 'bg-red-200 text-red-800')
-                            }}">
-                                {{ $order->status }}
-                            </span>
-                        </td>
-                    </tr>
-                    @endforeach
-                @else
-                    <tr>
-                        <td colspan="2" class="py-4 text-center">Tidak ada pesanan</td>
-                    </tr>
-                @endif
-            </tbody>
-        </table>
-    </div>
-</div>
-
-<!-- Kategori Produk -->
-<div class="mb-6">
-    <h2 class="text-xl font-bold mb-4">Kategori Produk</h2>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div class="bg-white p-4 rounded-lg shadow">
-            <h3 class="text-lg font-bold">Air</h3>
-            <p class="text-sm text-gray-500">Pesan air rebus berkualitas.</p>
-            <a href="{{ route('customer.products', ['category' => 'air']) }}" class="text-blue-600 hover:text-blue-800">Lihat Produk</a>
-        </div>
-        <div class="bg-white p-4 rounded-lg shadow">
-            <h3 class="text-lg font-bold">Galon + Air</h3>
-            <p class="text-sm text-gray-500">Pesan galon beserta air rebus.</p>
-            <a href="{{ route('customer.products', ['category' => 'galon-air']) }}" class="text-blue-600 hover:text-blue-800">Lihat Produk</a>
-        </div>
-        <div class="bg-white p-4 rounded-lg shadow">
-            <h3 class="text-lg font-bold">Galon Only</h3>
-            <p class="text-sm text-gray-500">Pesan galon saja.</p>
-            <a href="{{ route('customer.products', ['category' => 'galon-only']) }}" class="text-blue-600 hover:text-blue-800">Lihat Produk</a>
-        </div>
     </div>
 </div>
 
@@ -182,4 +126,9 @@ function addToCart(productId) {
     });
 }
 </script>
+
+<style>
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+</style>
 @endsection

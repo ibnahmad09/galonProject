@@ -64,6 +64,8 @@ Route::prefix('customer')->middleware('customer')->group(function () {
     Route::get('/cart/remove/{id}', [CartController::class, 'removeFromCart'])->name('cart.remove');
     Route::get('/checkout', [CustomerController::class, 'checkout'])->name('customer.checkout');
     Route::get('/order-history', [CustomerController::class, 'orderHistory'])->name('customer.order.history');
+    Route::get('/profile', [CustomerController::class, 'profile'])->name('customer.profile');
+    Route::post('/profile', [CustomerController::class, 'updateProfile'])->name('customer.profile.update');
 });
 
 // Courier Routes

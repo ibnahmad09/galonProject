@@ -64,4 +64,25 @@ class CustomerController extends Controller
 
         return view('customer.products', compact('products', 'category'));
     }
+
+    public function profile()
+    {
+        $user = auth()->user();
+        return view('customer.profile', compact('user'));
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $user = auth()->user();
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $user->id,
+            // Tambahkan validasi lain sesuai kebutuhan
+        ]);
+        $user->name = $request->name;
+        $user->email = $request->email;
+        // Tambahkan field lain jika ada
+        $user->save();
+        return redirect()->route('customer.profile')->with('success', 'Profil berhasil diperbarui.');
+    }
 }
