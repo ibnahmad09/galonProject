@@ -23,8 +23,13 @@ use App\Http\Controllers\StockMutationController;
 */
 
 Route::get('/', function () {
-    $products = \App\Models\Product::take(3)->get();
-    return view('welcome', compact('products'));
+    if (Auth::check()) {
+        // Jika sudah login, arahkan ke dashboard customer
+        return redirect()->route('customer.dashboard');
+    } else {
+        // Jika belum login, arahkan ke halaman login atau landing page
+        return view('auth.login'); // atau 'welcome' jika ada landing page
+    }
 });
 
 Auth::routes();

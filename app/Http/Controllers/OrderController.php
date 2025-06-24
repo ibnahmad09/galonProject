@@ -35,7 +35,7 @@ class OrderController extends Controller
         $order->total_price = $totalPrice;
         $order->payment_method = $request->payment_method;
         $order->delivery_address = $request->delivery_address;
-        $order->status = $request->payment_method == 'Midtrans' ? 'unpaid' : 'pending';
+        $order->status = 'pending';
         $order->save();
 
         foreach ($cartItems as $itemId => $item) {
