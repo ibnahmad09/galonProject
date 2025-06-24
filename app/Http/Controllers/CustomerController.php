@@ -85,4 +85,28 @@ class CustomerController extends Controller
         $user->save();
         return redirect()->route('customer.profile')->with('success', 'Profil berhasil diperbarui.');
     }
+
+    public function updatePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => ['required', 'current_password'],
+            'new_password' => ['required', 'string', 'min:8', 'confirmed'],
+        ]);
+
+        $user = auth()->user();
+        $user->password = bcrypt($request->new_password);
+        $user->save();
+
+        return back()->with('password_success', 'Password berhasil diubah!');
+    }
+
+    public function about() {
+        $news = \App\Models\News::orderByDesc('published_at')->get();
+        return view('customer.about', compact('news'));
+    }
+
+    public function showNews($id) {
+        $item = \App\Models\News::findOrFail($id);
+        return view('customer.news_show', compact('item'));
+    }
 }

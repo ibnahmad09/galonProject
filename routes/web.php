@@ -71,6 +71,9 @@ Route::prefix('customer')->middleware('customer')->group(function () {
     Route::get('/order-history', [CustomerController::class, 'orderHistory'])->name('customer.order.history');
     Route::get('/profile', [CustomerController::class, 'profile'])->name('customer.profile');
     Route::post('/profile', [CustomerController::class, 'updateProfile'])->name('customer.profile.update');
+    Route::post('/customer/profile/password', [CustomerController::class, 'updatePassword'])->name('customer.profile.password');
+    Route::get('/about', [CustomerController::class, 'about'])->name('customer.about');
+    Route::get('/news/{id}', [CustomerController::class, 'showNews'])->name('customer.news.show');
 });
 
 // Courier Routes

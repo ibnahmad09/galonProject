@@ -3,7 +3,7 @@
 @section('content')
 <div class="flex justify-between mb-6">
     <h1 class="text-2xl font-bold">Promosi</h1>
-    <a href="{{ route('promotions.create') }}" 
+    <a href="{{ route('promotions.create') }}"
        class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
         Buat Promosi
     </a>
@@ -26,7 +26,7 @@
                 <td class="py-4">{{ $promo->code }}</td>
                 <td>{{ $promo->product->name }}</td>
                 <td>{{ $promo->discount_percent }}%</td>
-                <td>{{ $promo->end_date->format('d M Y') }}</td>
+                <td>{{ \Carbon\Carbon::parse($promo->end_date)->format('d M Y') }}</td>
                 <td>
                     <form action="{{ route('promotions.destroy', $promo->id) }}" method="POST" class="inline">
                         @csrf

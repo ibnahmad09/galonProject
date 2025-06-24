@@ -19,7 +19,7 @@
         <div class="bg-white p-4 md:p-5 rounded-xl shadow hover:shadow-lg transition">
             <h3 class="text-base md:text-lg font-bold text-blue-700 mb-1">{{ $promo->product->name }}</h3>
             <p class="text-red-500 font-semibold">Diskon {{ $promo->discount_percent }}%</p>
-            <p class="text-xs text-gray-400">Berlaku sampai {{ $promo->end_date->format('d M Y') }}</p>
+            <p class="text-xs text-gray-400">Berlaku sampai {{ \Carbon\Carbon::parse($promo->end_date)->format('d M Y') }}</p>
         </div>
         @endforeach
     </div>
@@ -28,7 +28,7 @@
 
 <!-- Produk Terlaris -->
 <div class="mb-8">
-    <h2 class="text-lg md:text-xl font-bold mb-4 text-blue-700">Produk Kami</h2>
+    <h2 class="text-2xl md:text-3xl font-bold mb-10 text-center text-blue-700">Produk Kami</h2>
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
         @foreach($products as $product)
         <div class="bg-white rounded-xl shadow hover:shadow-lg transition flex flex-col">
@@ -45,21 +45,16 @@
         @endforeach
     </div>
 </div>
-
-<!-- Informasi/Berita Section -->
+<br>
+<!-- Informasi & Berita Section (Baru) -->
 <div class="mb-8">
-    <h2 class="text-lg md:text-xl font-bold mb-4 text-blue-700">Informasi & Berita</h2>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-        @forelse($news as $item)
-        <div class="bg-white rounded-xl shadow hover:shadow-lg transition flex flex-col">
-            @if($item->image)
-                <img src="{{ asset('storage/'.$item->image) }}" class="w-full h-28 md:h-32 object-cover rounded-t-xl mb-2" loading="lazy" alt="{{ $item->title }}">
-            @endif
-            <div class="p-3 md:p-4 flex-1 flex flex-col">
-                <h3 class="text-base md:text-lg font-bold mb-1 line-clamp-2">{{ $item->title }}</h3>
-                <p class="text-sm text-gray-500 flex-1 line-clamp-3">{{ Str::limit(strip_tags($item->content), 100) }}</p>
-                <p class="text-xs text-gray-400 mt-2">{{ $item->published_at ? date('d M Y', strtotime($item->published_at)) : '' }}</p>
-            </div>
+    <h2 class="text-2xl md:text-3xl font-bold mb-10 text-center text-blue-700">Informasi & Berita</h2>
+    <div class="flex flex-col lg:flex-row justify-center items-stretch gap-8">
+        @forelse($news->take(3) as $item)
+        <div class="flex-1 min-w-[280px] max-w-sm bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-lg transition flex flex-col px-6 py-6 mx-auto">
+            <h3 class="text-base md:text-lg font-bold mb-2 text-blue-700 leading-snug">{{ $item->title }}</h3>
+            <p class="text-sm text-gray-700 flex-1 mb-4">{{ Str::limit(strip_tags($item->content), 120) }}</p>
+            <p class="text-xs text-gray-400 mt-auto">{{ $item->published_at ? date('d M Y', strtotime($item->published_at)) : '' }}</p>
         </div>
         @empty
         <div class="col-span-full text-center text-gray-500">Belum ada berita/informasi.</div>
