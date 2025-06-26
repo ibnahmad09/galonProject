@@ -1,0 +1,40 @@
+module.exports = {
+    content: [
+      './resources/views/**/*.blade.php',
+      './resources/js/**/*.js',
+      './resources/css/**/*.css',
+    ],
+    theme: {
+      extend: {},
+    },
+    plugins: [],
+    safelist: [
+      // Contoh class yang sering tidak ter-generate
+      'bg-gradient-to-r',
+      'from-green-400',
+      'via-blue-500',
+      'to-purple-600',
+      'shadow-2xl',
+      'hover:scale-105',
+      'transition-all',
+      'duration-300',
+      'text-4xl',
+      'font-extrabold',
+      'rounded-xl',
+      'bg-pink-500',
+      'hover:bg-pink-600',
+      'text-white',
+      'rounded-full',
+      'shadow-lg',
+      'mt-6',
+      'mb-4',
+      'px-6',
+      'py-2',
+      'p-8',
+      'bg-white/60',
+      'w-full',
+      'py-4',
+      'mt-8',
+      // Tambahkan class lain sesuai kebutuhan
+    ],
+  }

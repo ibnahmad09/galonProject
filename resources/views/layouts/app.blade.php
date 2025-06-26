@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ config('app.name', 'Galon Rebus') }}</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.4.1/dist/tailwind.min.css" rel="stylesheet">
+   @vite('resources/css/app.css')
     <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/2933/2933884.png" type="image/png">
-    <script src="https://cdn.tailwindcss.com"></script>
+
     @stack('styles')
 </head>
 <body class="min-h-screen bg-gradient-to-br from-blue-100 via-blue-200 to-cyan-200 flex flex-col">

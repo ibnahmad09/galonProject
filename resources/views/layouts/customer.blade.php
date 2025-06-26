@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Depot Air Minum Rebus</title>
     @vite('resources/css/app.css')
-    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@2.8.2/dist/alpine.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
@@ -21,6 +20,7 @@
                 Depot Air Minum
             </a>
             <!-- Desktop Nav -->
+            @auth
             <nav class="hidden md:flex items-center gap-2 lg:gap-4">
                 <a href="{{ route('customer.products') }}" class="px-3 py-2 rounded hover:bg-blue-50 transition text-gray-700 font-medium">Produk</a>
                 <a href="{{ route('customer.order.history') }}" class="px-3 py-2 rounded hover:bg-blue-50 transition text-gray-700 font-medium">Riwayat</a>
@@ -32,7 +32,6 @@
                     </svg>
                     @php $cartCount = count(session('cart', [])) @endphp
                     @if($cartCount > 0)
-
                     <span class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs border-2 border-white">{{ $cartCount }}</span>
                     @endif
                 </a>
@@ -41,6 +40,13 @@
                     <button type="submit" class="ml-2 px-3 py-2 rounded bg-blue-600 text-white font-semibold hover:bg-blue-700 transition">Logout</button>
                 </form>
             </nav>
+            @endauth
+            @guest
+            <nav class="hidden md:flex items-center gap-2 lg:gap-4">
+                <a href="{{ url('/') }}" class="px-3 py-2 rounded hover:bg-blue-50 transition text-gray-700 font-medium">Produk</a>
+                <a href="{{ route('customer.about') }}" class="px-3 py-2 rounded hover:bg-blue-50 transition text-gray-700 font-medium">Tentang Kami</a>
+            </nav>
+            @endguest
             <!-- Mobile Hamburger -->
             <div x-data="{ open: false }" class="md:hidden flex items-center relative">
                 <button @click="open = !open" class="focus:outline-none" aria-label="Buka menu">
@@ -55,6 +61,7 @@
                 <div x-show="open" x-cloak @click="open = false" class="fixed inset-0 bg-black bg-opacity-40 z-30"></div>
                 <!-- Mobile Menu -->
                 <div x-show="open" x-transition x-cloak class="fixed top-0 left-0 w-full bg-white shadow-lg rounded-b-xl py-6 px-6 flex flex-col gap-2 z-40" style="max-width:100vw;">
+                    @auth
                     <a href="{{ route('customer.products', ['category' => 'semua']) }}" @click="open = false" class="py-3 px-3 rounded hover:bg-blue-50 transition text-gray-700 font-medium">Produk</a>
                     <a href="{{ route('customer.order.history') }}" @click="open = false" class="py-3 px-3 rounded hover:bg-blue-50 transition text-gray-700 font-medium">Riwayat</a>
                     <a href="{{ route('customer.profile') }}" @click="open = false" class="py-3 px-3 rounded hover:bg-blue-50 transition text-gray-700 font-medium">Profil</a>
@@ -71,6 +78,11 @@
                         @csrf
                         <button type="submit" class="w-full mt-2 px-3 py-2 rounded bg-blue-600 text-white font-semibold hover:bg-blue-700 transition">Logout</button>
                     </form>
+                    @endauth
+                    @guest
+                    <a href="{{ url('/') }}" @click="open = false" class="py-3 px-3 rounded hover:bg-blue-50 transition text-gray-700 font-medium">Produk</a>
+                    <a href="{{ route('customer.about') }}" @click="open = false" class="py-3 px-3 rounded hover:bg-blue-50 transition text-gray-700 font-medium">Tentang Kami</a>
+                    @endguest
                 </div>
             </div>
         </div>

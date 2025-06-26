@@ -27,8 +27,10 @@ Route::get('/', function () {
         // Jika sudah login, arahkan ke dashboard customer
         return redirect()->route('customer.dashboard');
     } else {
-        // Jika belum login, arahkan ke halaman login atau landing page
-        return view('auth.login'); // atau 'welcome' jika ada landing page
+        // Jika belum login, tampilkan halaman produk customer
+        $category = null;
+        $products = \App\Models\Product::all();
+        return view('customer.products', compact('products', 'category'));
     }
 });
 
