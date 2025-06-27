@@ -56,6 +56,12 @@
                         Berita/Informasi
                     </a>
                 </li>
+                <li class="mb-2">
+                    <a href="{{ route('admin.reports.index') }}"
+                       class="{{ request()->routeIs('admin.reports*') ? 'bg-blue-700' : '' }} block p-3 rounded hover:bg-blue-700">
+                        Laporan
+                    </a>
+                </li>
             </ul>
             <form method="POST" action="{{ route('logout') }}" class="mt-8">
                 @csrf

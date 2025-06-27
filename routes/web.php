@@ -10,6 +10,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\StockMutationController;
+use App\Http\Controllers\ReportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -58,6 +59,15 @@ Route::prefix('admin')->middleware('admin')->group(function () {
     Route::get('/news/{id}/edit', [AdminController::class, 'newsEdit'])->name('admin.news.edit');
     Route::put('/news/{id}', [AdminController::class, 'newsUpdate'])->name('admin.news.update');
     Route::delete('/news/{id}', [AdminController::class, 'newsDestroy'])->name('admin.news.destroy');
+});
+
+// Laporan Admin
+Route::prefix('admin/reports')->middleware('admin')->name('admin.reports.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\ReportController::class, 'index'])->name('index');
+    Route::get('/sales', [\App\Http\Controllers\ReportController::class, 'sales'])->name('sales');
+    Route::get('/income', [\App\Http\Controllers\ReportController::class, 'income'])->name('income');
+    Route::get('/deliveries', [\App\Http\Controllers\ReportController::class, 'deliveries'])->name('deliveries');
+    Route::get('/export-pdf', [\App\Http\Controllers\ReportController::class, 'exportPdf'])->name('exportPdf');
 });
 
 // Customer Routes
