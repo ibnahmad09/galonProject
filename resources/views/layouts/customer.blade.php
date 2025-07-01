@@ -44,7 +44,8 @@
             @guest
             <nav class="hidden md:flex items-center gap-2 lg:gap-4">
                 <a href="{{ url('/') }}" class="px-3 py-2 rounded hover:bg-blue-50 transition text-gray-700 font-medium">Produk</a>
-                <a href="{{ route('customer.about') }}" class="px-3 py-2 rounded hover:bg-blue-50 transition text-gray-700 font-medium">Tentang Kami</a>
+                <a href="{{ route('about') }}" class="px-3 py-2 rounded hover:bg-blue-50 transition text-gray-700 font-medium">Tentang Kami</a>
+                <a href="{{ route('login') }}" class="px-3 py-2 rounded bg-blue-600 text-white font-semibold hover:bg-blue-700 transition">Login</a>
             </nav>
             @endguest
             <!-- Mobile Hamburger -->
@@ -62,7 +63,7 @@
                 <!-- Mobile Menu -->
                 <div x-show="open" x-transition x-cloak class="fixed top-0 left-0 w-full bg-white shadow-lg rounded-b-xl py-6 px-6 flex flex-col gap-2 z-40" style="max-width:100vw;">
                     @auth
-                    <a href="{{ route('customer.products', ['category' => 'semua']) }}" @click="open = false" class="py-3 px-3 rounded hover:bg-blue-50 transition text-gray-700 font-medium">Produk</a>
+                    <a href="{{ route('customer.products') }}" @click="open = false" class="py-3 px-3 rounded hover:bg-blue-50 transition text-gray-700 font-medium">Produk</a>
                     <a href="{{ route('customer.order.history') }}" @click="open = false" class="py-3 px-3 rounded hover:bg-blue-50 transition text-gray-700 font-medium">Riwayat</a>
                     <a href="{{ route('customer.profile') }}" @click="open = false" class="py-3 px-3 rounded hover:bg-blue-50 transition text-gray-700 font-medium">Profil</a>
                     <a href="{{ route('customer.about') }}" @click="open = false" class="py-3 px-3 rounded hover:bg-blue-50 transition text-gray-700 font-medium">Tentang Kami</a>
@@ -81,7 +82,8 @@
                     @endauth
                     @guest
                     <a href="{{ url('/') }}" @click="open = false" class="py-3 px-3 rounded hover:bg-blue-50 transition text-gray-700 font-medium">Produk</a>
-                    <a href="{{ route('customer.about') }}" @click="open = false" class="py-3 px-3 rounded hover:bg-blue-50 transition text-gray-700 font-medium">Tentang Kami</a>
+                    <a href="{{ route('about') }}" @click="open = false" class="py-3 px-3 rounded hover:bg-blue-50 transition text-gray-700 font-medium">Tentang Kami</a>
+                    <a href="{{ route('login') }}" @click="open = false" class="py-3 px-3 rounded bg-blue-600 text-white font-semibold hover:bg-blue-700 transition">Login</a>
                     @endguest
                 </div>
             </div>

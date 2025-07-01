@@ -27,6 +27,13 @@ class CartController extends Controller
         }
 
         session()->put('cart', $cart);
+
+        // Jika request via AJAX, return JSON
+        if ($request->ajax()) {
+            return response()->json(['success' => true, 'message' => 'Produk ditambahkan ke keranjang']);
+        }
+
+        // Jika request biasa, redirect
         return redirect()->back()->with('success', 'Produk ditambahkan ke keranjang');
     }
 

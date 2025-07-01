@@ -113,3 +113,9 @@ Route::post('/admin/stock/restock', [StockMutationController::class, 'restock'])
 
 // Order Place
 Route::post('/order/place', [OrderController::class, 'placeOrder'])->name('order.place');
+
+// Route untuk halaman about yang dapat diakses guest
+Route::get('/about', function () {
+    $news = \App\Models\News::orderByDesc('published_at')->get();
+    return view('customer.about', compact('news'));
+})->name('about');

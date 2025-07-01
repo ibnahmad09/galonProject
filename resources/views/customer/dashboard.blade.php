@@ -88,17 +88,28 @@
 
 <script>
 function addToCart(productId) {
-    fetch(`/cart/add/${productId}`, {
+    fetch('{{ route("cart.add", "") }}/' + productId, {
         method: 'POST',
         headers: {
-            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'X-Requested-With': 'XMLHttpRequest'
         }
     })
-    .then(response => response.json())
+    .then(response => {
+        if (response.headers.get('content-type')?.includes('application/json')) {
+            return response.json();
+        } else {
+            throw new Error('Bukan response JSON');
+        }
+    })
     .then(data => {
         if (data.success) {
             location.reload();
         }
+    })
+    .catch(err => {
+        console.error('Error:', err);
+        alert('Gagal menambah ke keranjang. Silakan coba lagi.');
     });
 }
 </script>
