@@ -98,6 +98,9 @@ Route::prefix('courier')->middleware('courier')->group(function () {
     Route::post('/delivery/{id}/accept', [CourierController::class, 'acceptDelivery'])->name('courier.accept-delivery');
     Route::get('/delivery-history', [CourierController::class, 'deliveryHistory'])->name('courier.delivery-history');
     Route::post('/notifications/{id}/mark-read', [CourierController::class, 'markNotificationAsRead'])->name('courier.notifications.mark-read');
+    Route::get('/profile', [CourierController::class, 'profile'])->name('courier.profile');
+    Route::post('/profile', [CourierController::class, 'updateProfile'])->name('courier.profile.update');
+    Route::post('/profile/password', [CourierController::class, 'updatePassword'])->name('courier.profile.password');
 });
 
 // Promotions

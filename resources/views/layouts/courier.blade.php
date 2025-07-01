@@ -164,6 +164,11 @@
                             <i class="fas fa-history me-2"></i>
                             Riwayat Pengiriman
                         </a>
+                        <a class="nav-link {{ request()->routeIs('courier.profile') ? 'active' : '' }}"
+                           href="{{ route('courier.profile') }}">
+                            <i class="fas fa-user-cog me-2"></i>
+                            Profil
+                        </a>
                         <hr class="text-white-50">
                         <a class="nav-link" href="{{ route('logout') }}"
                            onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
@@ -230,7 +235,7 @@
                                     {{ Auth::user()->name }}
                                 </button>
                                 <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="#"><i class="fas fa-user-cog me-2"></i>Profil</a></li>
+                                    <li><a class="dropdown-item" href="{{ route('courier.profile') }}"><i class="fas fa-user-cog me-2"></i>Profil</a></li>
                                     <li><hr class="dropdown-divider"></li>
                                     <li>
                                         <a class="dropdown-item" href="{{ route('logout') }}"

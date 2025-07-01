@@ -171,4 +171,46 @@ class CourierController extends Controller
 
         return response()->json(['success' => true]);
     }
+
+    // Halaman profil kurir
+    public function profile()
+    {
+        $user = auth()->user();
+        return view('courier.profile', compact('user'));
+    }
+
+    // Update profil kurir
+    public function updateProfile(Request $request)
+    {
+        $user = auth()->user();
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $user->id,
+            'phone' => 'nullable|string|max:20',
+            'address' => 'nullable|string|max:500'
+        ]);
+
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->phone = $request->phone;
+        $user->address = $request->address;
+        $user->save();
+
+        return redirect()->route('courier.profile')->with('success', 'Profil berhasil diperbarui.');
+    }
+
+    // Update password kurir
+    public function updatePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => ['required', 'current_password'],
+            'new_password' => ['required', 'string', 'min:8', 'confirmed'],
+        ]);
+
+        $user = auth()->user();
+        $user->password = bcrypt($request->new_password);
+        $user->save();
+
+        return back()->with('password_success', 'Password berhasil diubah!');
+    }
 }
