@@ -3,10 +3,10 @@
 @section('content')
 <div class="flex flex-col md:flex-row justify-center items-start gap-8 mt-8 px-2 md:px-0">
     <!-- Profile Card -->
-    <div class="w-full md:max-w-md bg-white/70 backdrop-blur-lg shadow-2xl rounded-2xl p-8 relative border border-blue-100">
+    <div class="w-full md:max-w-md bg-white/70 backdrop-blur-lg shadow-2xl rounded-2xl p-8 relative border border-blue-100 animate-fadeInUp">
         <div class="flex flex-col items-center mb-6">
-            <div class="relative mb-2">
-                <img src="https://ui-avatars.com/api/?name={{ urlencode($user->name) }}&background=0D8ABC&color=fff&size=128" alt="Avatar" class="w-28 h-28 rounded-full shadow-lg border-4 border-blue-400" style="box-shadow:0 0 32px 0 #38bdf8, 0 0 0 4px #fff;">
+            <div class="relative mb-2 group">
+                <img src="https://ui-avatars.com/api/?name={{ urlencode($user->name) }}&background=0D8ABC&color=fff&size=128" alt="Avatar" class="w-28 h-28 rounded-full shadow-lg border-4 border-blue-400 transition-transform duration-700 group-hover:rotate-180" style="box-shadow:0 0 32px 0 #38bdf8, 0 0 0 4px #fff;">
                 <span class="absolute bottom-2 right-2 w-4 h-4 bg-green-400 border-2 border-white rounded-full"></span>
             </div>
             <h2 class="text-2xl font-extrabold text-gray-800 tracking-wide mb-1">{{ $user->name }}</h2>
@@ -40,7 +40,7 @@
     </div>
 
     <!-- Change Password Card -->
-    <div class="w-full md:max-w-md bg-white/70 backdrop-blur-lg shadow-2xl rounded-2xl p-8 border border-blue-100 mt-8 md:mt-0">
+    <div class="w-full md:max-w-md bg-white/70 backdrop-blur-lg shadow-2xl rounded-2xl p-8 border border-blue-100 mt-8 md:mt-0 animate-fadeInUp">
         <h3 class="text-xl font-bold text-blue-700 mb-4 text-center">Ganti Password</h3>
         @if(session('password_success'))
             <div class="mb-3 w-full text-center bg-green-100 text-green-700 px-4 py-2 rounded shadow">{{ session('password_success') }}</div>
@@ -72,4 +72,26 @@
         </form>
     </div>
 </div>
+<style>
+@keyframes fadeInUp {
+    0% { opacity: 0; transform: translateY(40px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+.animate-fadeInUp {
+    animation: fadeInUp 0.7s cubic-bezier(.39,.575,.565,1.000) both;
+}
+</style>
+<script>
+// Avatar animasi berputar saat hover
+const avatar = document.querySelector('.group img');
+if (avatar) {
+    avatar.addEventListener('mouseenter', () => {
+        avatar.style.transition = 'transform 0.7s';
+        avatar.style.transform = 'rotate(180deg)';
+    });
+    avatar.addEventListener('mouseleave', () => {
+        avatar.style.transform = '';
+    });
+}
+</script>
 @endsection
