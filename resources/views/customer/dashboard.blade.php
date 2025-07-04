@@ -57,6 +57,138 @@
     </div>
 </div>
 
+<!-- Login/Register Section untuk Guest -->
+@guest
+<div class="bg-gradient-to-br from-blue-50 via-white to-blue-100 py-20 relative overflow-hidden">
+    <!-- Background Decorative Elements -->
+    <div class="absolute inset-0">
+        <div class="absolute top-10 left-10 w-32 h-32 bg-blue-200 rounded-full opacity-20 animate-pulse"></div>
+        <div class="absolute bottom-20 right-10 w-24 h-24 bg-blue-300 rounded-full opacity-30 animate-bounce"></div>
+        <div class="absolute top-1/2 left-1/4 w-16 h-16 bg-blue-100 rounded-full opacity-40 animate-spin"></div>
+    </div>
+
+    <div class="container mx-auto relative z-10">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl md:text-4xl font-black text-blue-900 mb-4">Bergabunglah dengan Kami</h2>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto">Dapatkan akses penuh untuk memesan air mineral berkualitas tinggi dengan pengiriman cepat dan layanan terbaik</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
+            <!-- Login Card -->
+            <div class="bg-white rounded-3xl shadow-2xl p-8 border border-blue-100 hover:shadow-3xl transition-all duration-300 transform hover:-translate-y-2">
+                <div class="text-center mb-6">
+                    <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold text-blue-900 mb-2">Sudah Punya Akun?</h3>
+                    <p class="text-gray-600">Masuk ke akun Anda untuk melanjutkan</p>
+                </div>
+
+                <div class="space-y-4 mb-6">
+                    <div class="flex items-center gap-3 p-3 bg-blue-50 rounded-lg">
+                        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span class="text-sm text-blue-800">Akses ke keranjang belanja</span>
+                    </div>
+                    <div class="flex items-center gap-3 p-3 bg-blue-50 rounded-lg">
+                        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span class="text-sm text-blue-800">Riwayat pesanan lengkap</span>
+                    </div>
+                    <div class="flex items-center gap-3 p-3 bg-blue-50 rounded-lg">
+                        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span class="text-sm text-blue-800">Notifikasi pengiriman real-time</span>
+                    </div>
+                </div>
+
+                <a href="{{ route('login') }}" class="block w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold py-4 px-6 rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-300 text-center shadow-lg hover:shadow-xl transform hover:scale-105">
+                    <span class="flex items-center justify-center gap-2">
+                        Masuk Sekarang
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                        </svg>
+                    </span>
+                </a>
+            </div>
+
+            <!-- Register Card -->
+            <div class="bg-gradient-to-br from-blue-600 to-blue-800 rounded-3xl shadow-2xl p-8 text-white hover:shadow-3xl transition-all duration-300 transform hover:-translate-y-2">
+                <div class="text-center mb-6">
+                    <div class="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-2">Baru di Sini?</h3>
+                    <p class="text-blue-100">Daftar sekarang dan dapatkan keuntungan khusus</p>
+                </div>
+
+                <div class="space-y-4 mb-6">
+                    <div class="flex items-center gap-3 p-3 bg-white/10 backdrop-blur-sm rounded-lg">
+                        <svg class="w-5 h-5 text-yellow-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"/>
+                        </svg>
+                        <span class="text-sm">Diskon 10% untuk pendaftar baru</span>
+                    </div>
+                    <div class="flex items-center gap-3 p-3 bg-white/10 backdrop-blur-sm rounded-lg">
+                        <svg class="w-5 h-5 text-yellow-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                        </svg>
+                        <span class="text-sm">Gratis ongkir pertama</span>
+                    </div>
+                    <div class="flex items-center gap-3 p-3 bg-white/10 backdrop-blur-sm rounded-lg">
+                        <svg class="w-5 h-5 text-yellow-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <span class="text-sm">Pengiriman prioritas 24 jam</span>
+                    </div>
+                </div>
+
+                <a href="{{ route('register') }}" class="block w-full bg-gradient-to-r from-yellow-400 to-yellow-500 text-blue-900 font-bold py-4 px-6 rounded-xl hover:from-yellow-500 hover:to-yellow-600 transition-all duration-300 text-center shadow-lg hover:shadow-xl transform hover:scale-105">
+                    <span class="flex items-center justify-center gap-2">
+                        Daftar Gratis
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
+                        </svg>
+                    </span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Additional Info -->
+        <div class="text-center mt-12">
+            <p class="text-gray-600 mb-4">Dengan mendaftar, Anda menyetujui <a href="#" class="text-blue-600 hover:underline">Syarat & Ketentuan</a> kami</p>
+            <div class="flex items-center justify-center gap-6 text-sm text-gray-500">
+                <div class="flex items-center gap-2">
+                    <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span>100% Aman</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span>Gratis Daftar</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    <span>24/7 Support</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@endguest
+
 <!-- Mengapa Memilih Section -->
 <div id="mengapa" class="bg-white py-16">
     <div class="container mx-auto">
@@ -106,18 +238,18 @@
                         @if($i === 0)
                         <span class="text-xs bg-blue-100 text-blue-700 font-bold px-2 py-1 rounded">Best Seller</span>
                         @endif
-                        <span class="ml-auto flex items-center gap-1 text-yellow-500 text-sm font-semibold">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.967a1 1 0 00.95.69h4.175c.969 0 1.371 1.24.588 1.81l-3.38 2.455a1 1 0 00-.364 1.118l1.287 3.966c.3.922-.755 1.688-1.54 1.118l-3.38-2.455a1 1 0 00-1.175 0l-3.38 2.455c-.784.57-1.838-.196-1.54-1.118l1.287-3.966a1 1 0 00-.364-1.118L2.05 9.394c-.783-.57-.38-1.81.588-1.81h4.175a1 1 0 00.95-.69l1.286-3.967z"/></svg>
-                            {{ number_format($product->rating, 1) }}
-                        </span>
+
                     </div>
                     <h3 class="font-bold text-lg text-blue-900 mb-1">{{ $product->name }}</h3>
                     <p class="text-gray-600 text-sm mb-2">{{ $product->description }}</p>
                     <div class="flex items-center justify-between mb-4">
                         <span class="text-blue-700 font-bold text-lg">Rp {{ number_format($product->price) }}</span>
-                        <span class="text-xs text-gray-500">Stok: {{ $product->stock }}</span>
                     </div>
-                    <button onclick="addToCart({{ $product->id }})" class="bg-blue-900 text-white font-semibold px-4 py-2 rounded-lg hover:bg-blue-800 transition w-full">Tambah ke Keranjang</button>
+                    @guest
+                    <button onclick="showLoginPopup()" class="bg-gradient-to-r from-blue-700 to-blue-900 text-white font-semibold px-6 py-3 rounded-lg hover:from-blue-800 hover:to-blue-900 transition w-full shadow-lg">Tambah ke Keranjang</button>
+                    @else
+                    <button onclick="addToCart({{ $product->id }})" class="bg-gradient-to-r from-blue-700 to-blue-900 text-white font-semibold px-6 py-3 rounded-lg hover:from-blue-800 hover:to-blue-900 transition w-full shadow-lg">Tambah ke Keranjang</button>
+                    @endguest
                 </div>
             </div>
             @endforeach
@@ -146,7 +278,26 @@
 </div>
 @endif
 
+<!-- Popup Login untuk Guest -->
+<div id="loginPopup" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-sm w-full text-center relative">
+        <button onclick="closeLoginPopup()" class="absolute top-3 right-3 text-gray-400 hover:text-gray-700 text-2xl font-bold">&times;</button>
+        <svg class="mx-auto mb-4 w-16 h-16 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+        </svg>
+        <h3 class="text-xl font-bold mb-2 text-blue-800">Login Diperlukan</h3>
+        <p class="text-gray-600 mb-6">Anda harus login terlebih dahulu untuk menambah produk ke keranjang.</p>
+        <a href="{{ route('login') }}" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-lg transition">Login Sekarang</a>
+    </div>
+</div>
+
 <script>
+function showLoginPopup() {
+    document.getElementById('loginPopup').classList.remove('hidden');
+}
+function closeLoginPopup() {
+    document.getElementById('loginPopup').classList.add('hidden');
+}
 function addToCart(productId) {
     fetch('{{ route("cart.add", "") }}/' + productId, {
         method: 'POST',

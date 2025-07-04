@@ -13,6 +13,7 @@
             font-family: 'Poppins', sans-serif !important;
         }
     </style>
+    @laravelPWA
 </head>
 <body class="bg-gray-50 min-h-screen flex flex-col">
     <!-- Header -->

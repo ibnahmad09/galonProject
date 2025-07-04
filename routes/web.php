@@ -28,10 +28,10 @@ Route::get('/', function () {
         // Jika sudah login, arahkan ke dashboard customer
         return redirect()->route('customer.dashboard');
     } else {
-        // Jika belum login, tampilkan halaman produk customer
-        $category = null;
+        // Jika belum login, tampilkan halaman dashboard customer (mirip dashboard.blade.php)
         $products = \App\Models\Product::all();
-        return view('customer.products', compact('products', 'category'));
+        $news = \App\Models\News::orderBy('published_at', 'desc')->get();
+        return view('customer.dashboard', compact('products', 'news'));
     }
 });
 

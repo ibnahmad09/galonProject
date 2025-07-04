@@ -82,15 +82,13 @@
             </div>
             <div class="flex items-center gap-3">
                 <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 12.414a2 2 0 00-2.828 0l-4.243 4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                <span class="text-gray-700">Jl. Sumber Air No. 123, Jakarta</span>
+                <span class="text-gray-700">Jl. Ujung Batu, Indragiri Hilir, Riau</span>
             </div>
         </div>
         <div class="flex-1">
             <div class="bg-blue-100 rounded-2xl p-6 h-full flex flex-col items-center justify-center">
                 <div class="text-blue-700 font-bold text-lg mb-2">Jam Operasional</div>
-                <div class="text-gray-700">Senin - Jumat: 08:00 - 18:00</div>
-                <div class="text-gray-700">Sabtu: 08:00 - 15:00</div>
-                <div class="text-gray-700">Minggu: Tutup</div>
+                <div class="text-gray-700">Senin - minggu: 08:00 - 18:00</div>
             </div>
         </div>
     </div>
