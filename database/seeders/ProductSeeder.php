@@ -14,26 +14,26 @@ class ProductSeeder extends Seeder
     {
         Product::insert([
             [
-                'name' => 'Air Isi Ulang',
-                'price' => 7000,
+                'name' => 'Air Rebus Isi Ulang',
+                'price' => 6000,
                 'category' => 'air',
-                'description' => 'Air isi ulang segar dan higienis.',
+                'description' => 'Air rebus isi ulang segar dan higienis.',
                 'image' => null,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
-                'name' => 'Galon + Air',
-                'price' => 25000,
+                'name' => 'Galon + Air Rebus',
+                'price' => 51000,
                 'category' => 'galon+air',
-                'description' => 'Paket galon baru beserta air isi ulang.',
+                'description' => 'Paket galon baru beserta air rebus isi ulang.',
                 'image' => null,
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
             [
                 'name' => 'Galon Kosong',
-                'price' => 18000,
+                'price' => 45000,
                 'category' => 'galon',
                 'description' => 'Galon kosong berkualitas.',
                 'image' => null,

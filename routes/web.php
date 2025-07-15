@@ -5,12 +5,13 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CartController;
-use App\Http\Controllers\CourierController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\StockMutationController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\ReferralController;
+use App\Http\Controllers\ReferralSettingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,7 +36,12 @@ Route::get('/', function () {
     }
 });
 
-Auth::routes();
+// Authentication Routes
+Route::get('register', [App\Http\Controllers\Auth\RegisterController::class, 'showRegistrationForm'])->name('register');
+Route::post('register', [App\Http\Controllers\Auth\RegisterController::class, 'register']);
+Route::get('login', [App\Http\Controllers\Auth\LoginController::class, 'showLoginForm'])->name('login');
+Route::post('login', [App\Http\Controllers\Auth\LoginController::class, 'login']);
+Route::post('logout', [App\Http\Controllers\Auth\LoginController::class, 'logout'])->name('logout');
 
 // Admin Routes
 Route::prefix('admin')->middleware('admin')->group(function () {
@@ -45,10 +51,17 @@ Route::prefix('admin')->middleware('admin')->group(function () {
     Route::post('/products', [AdminController::class, 'storeProduct'])->name('admin.products.store');
     Route::get('/orders', [AdminController::class, 'orders'])->name('admin.orders');
     Route::get('/orders/{id}', [AdminController::class, 'orderDetail'])->name('admin.order.detail');
-    Route::post('/orders/{id}/status', [AdminController::class, 'updateOrderStatus'])->name('admin.orders.updateStatus');
-    Route::post('/orders/{orderId}/assign-courier', [AdminController::class, 'assignCourier'])->name('admin.assign.courier');
     Route::get('/deliveries', [AdminController::class, 'deliveries'])->name('admin.deliveries');
+    Route::get('/deliveries/quick-update', [AdminController::class, 'quickUpdateDeliveries'])->name('admin.deliveries.quick-update');
+    Route::get('/deliveries/available', [AdminController::class, 'availableDeliveries'])->name('admin.deliveries.available');
+    Route::get('/deliveries/history', [AdminController::class, 'deliveryHistory'])->name('admin.deliveries.history');
     Route::get('/deliveries/{id}', [AdminController::class, 'deliveryDetail'])->name('admin.delivery.detail');
+    Route::post('/deliveries/{id}/status', [AdminController::class, 'updateDeliveryStatus'])->name('admin.delivery.updateStatus');
+    Route::post('/deliveries/{id}/accept', [AdminController::class, 'acceptDelivery'])->name('admin.delivery.accept');
+    Route::post('/deliveries/{id}/quick-update', [AdminController::class, 'quickUpdateStatus'])->name('admin.delivery.quick-update');
+
+    // Test route untuk debugging
+    // Route::get('/test-quick-update', [AdminController::class, 'testQuickUpdate'])->name('test.quick-update');
     Route::get('/promotions', [AdminController::class, 'promotions'])->name('admin.promotions');
     Route::get('/products/{product}/edit', [AdminController::class, 'editProduct'])->name('admin.products.edit');
     Route::put('/products/{product}', [AdminController::class, 'updateProduct'])->name('admin.products.update');
@@ -59,6 +72,10 @@ Route::prefix('admin')->middleware('admin')->group(function () {
     Route::get('/news/{id}/edit', [AdminController::class, 'newsEdit'])->name('admin.news.edit');
     Route::put('/news/{id}', [AdminController::class, 'newsUpdate'])->name('admin.news.update');
     Route::delete('/news/{id}', [AdminController::class, 'newsDestroy'])->name('admin.news.destroy');
+
+    // Referral Settings
+    Route::get('/referral-settings', [ReferralSettingController::class, 'index'])->name('admin.referral-settings.index');
+    Route::put('/referral-settings', [ReferralSettingController::class, 'update'])->name('admin.referral-settings.update');
 });
 
 // Laporan Admin
@@ -81,26 +98,20 @@ Route::prefix('customer')->middleware('customer')->group(function () {
     Route::get('/cart/remove/{id}', [CartController::class, 'removeFromCart'])->name('cart.remove');
     Route::get('/checkout', [CustomerController::class, 'checkout'])->name('customer.checkout');
     Route::get('/order-history', [CustomerController::class, 'orderHistory'])->name('customer.order.history');
+    Route::get('/tracking/{trackingNumber}', [CustomerController::class, 'tracking'])->name('customer.tracking');
     Route::get('/profile', [CustomerController::class, 'profile'])->name('customer.profile');
     Route::post('/profile', [CustomerController::class, 'updateProfile'])->name('customer.profile.update');
     Route::post('/customer/profile/password', [CustomerController::class, 'updatePassword'])->name('customer.profile.password');
     Route::get('/about', [CustomerController::class, 'about'])->name('customer.about');
     Route::get('/news/{id}', [CustomerController::class, 'showNews'])->name('customer.news.show');
-});
 
-// Courier Routes
-Route::prefix('courier')->middleware('courier')->group(function () {
-    Route::get('/dashboard', [CourierController::class, 'dashboard'])->name('courier.dashboard');
-    Route::get('/deliveries', [CourierController::class, 'deliveries'])->name('courier.deliveries');
-    Route::get('/delivery/{id}', [CourierController::class, 'deliveryDetail'])->name('courier.delivery-detail');
-    Route::post('/delivery/{id}/status', [CourierController::class, 'updateDeliveryStatus'])->name('courier.update-delivery-status');
-    Route::get('/available-deliveries', [CourierController::class, 'availableDeliveries'])->name('courier.available-deliveries');
-    Route::post('/delivery/{id}/accept', [CourierController::class, 'acceptDelivery'])->name('courier.accept-delivery');
-    Route::get('/delivery-history', [CourierController::class, 'deliveryHistory'])->name('courier.delivery-history');
-    Route::post('/notifications/{id}/mark-read', [CourierController::class, 'markNotificationAsRead'])->name('courier.notifications.mark-read');
-    Route::get('/profile', [CourierController::class, 'profile'])->name('courier.profile');
-    Route::post('/profile', [CourierController::class, 'updateProfile'])->name('courier.profile.update');
-    Route::post('/profile/password', [CourierController::class, 'updatePassword'])->name('courier.profile.password');
+    // Referral Routes
+    Route::get('/referral', [ReferralController::class, 'index'])->name('customer.referral.index');
+    Route::post('/referral/validate', [ReferralController::class, 'validateCode'])->name('customer.referral.validate');
+    Route::get('/referral/history', [ReferralController::class, 'getReferralHistory'])->name('customer.referral.history');
+    Route::get('/referral/discounts', [ReferralController::class, 'showDiscounts'])->name('customer.referral.discounts');
+    Route::get('/referral/available-discounts', [ReferralController::class, 'getAvailableDiscounts'])->name('customer.referral.available-discounts');
+    Route::post('/referral/use-discount', [ReferralController::class, 'useDiscount'])->name('customer.referral.use-discount');
 });
 
 // Promotions

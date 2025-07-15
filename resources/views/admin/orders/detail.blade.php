@@ -22,18 +22,26 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700">Status Pesanan</label>
+                        <label class="block text-sm font-medium text-gray-700">Status Pengiriman</label>
+                        @if($order->delivery)
                         @php
-                            $statusColors = [
+                                $deliveryColors = [
                                 'pending' => 'bg-yellow-100 text-yellow-800',
-                                'processing' => 'bg-blue-100 text-blue-800',
+                                    'assigned' => 'bg-blue-100 text-blue-800',
+                                    'picked_up' => 'bg-green-100 text-green-800',
+                                    'on_way' => 'bg-purple-100 text-purple-800',
                                 'delivered' => 'bg-green-100 text-green-800',
-                                'cancelled' => 'bg-red-100 text-red-800'
+                                    'failed' => 'bg-red-100 text-red-800'
                             ];
                         @endphp
-                        <span class="inline-block px-3 py-1 rounded-full text-sm font-medium {{ $statusColors[$order->status] ?? 'bg-gray-100 text-gray-800' }}">
-                            {{ ucfirst($order->status) }}
+                            <span class="inline-block px-3 py-1 rounded-full text-sm font-medium {{ $deliveryColors[$order->delivery->status] ?? 'bg-gray-100 text-gray-800' }}">
+                                {{ ucwords(str_replace('_', ' ', $order->delivery->status)) }}
+                            </span>
+                        @else
+                            <span class="inline-block px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                                Siap Dikirim
                         </span>
+                        @endif
                     </div>
 
                     <div>
@@ -52,22 +60,16 @@
                     </div>
                 </div>
 
-                <!-- Update Status -->
+                <!-- Link ke Pengiriman -->
+                @if($order->delivery)
                 <div class="border-t pt-4">
-                    <h3 class="text-lg font-medium mb-3">Update Status Pesanan</h3>
-                    <form action="{{ route('admin.orders.updateStatus', $order->id) }}" method="POST" class="flex items-center space-x-3">
-                        @csrf
-                        <select name="status" class="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <option value="pending" {{ $order->status == 'pending' ? 'selected' : '' }}>Pending</option>
-                            <option value="processing" {{ $order->status == 'processing' ? 'selected' : '' }}>Processing</option>
-                            <option value="delivered" {{ $order->status == 'delivered' ? 'selected' : '' }}>Delivered</option>
-                            <option value="cancelled" {{ $order->status == 'cancelled' ? 'selected' : '' }}>Cancelled</option>
-                        </select>
-                        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
-                            Update Status
-                        </button>
-                    </form>
+                    <h3 class="text-lg font-medium mb-3">Kelola Pengiriman</h3>
+                    <a href="{{ route('admin.delivery.detail', $order->delivery->id) }}"
+                       class="inline-block bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
+                        <i class="fas fa-truck mr-2"></i>Update Status Pengiriman
+                    </a>
                 </div>
+                @endif
             </div>
 
             <!-- Detail Item -->
@@ -172,49 +174,24 @@
                             </span>
                         </div>
 
-                        @if($order->delivery->courier)
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Kurir</label>
-                            <p class="text-sm text-gray-900">{{ $order->delivery->courier->name }}</p>
-                            <p class="text-xs text-gray-500">{{ $order->delivery->courier->phone }}</p>
-                        </div>
-                        @endif
-
                         @if($order->delivery->notes)
                         <div>
-                            <label class="block text-sm font-medium text-gray-700">Catatan Kurir</label>
+                            <label class="block text-sm font-medium text-gray-700">Catatan Pengiriman</label>
                             <p class="text-sm text-gray-900">{{ $order->delivery->notes }}</p>
                         </div>
                         @endif
+
+                        <div class="pt-3">
+                            <a href="{{ route('admin.delivery.detail', $order->delivery->id) }}"
+                               class="inline-block bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 text-sm">
+                                <i class="fas fa-truck mr-2"></i>Kelola Pengiriman
+                            </a>
+                        </div>
                     </div>
                 @else
                     <p class="text-gray-500 text-sm">Belum ada informasi pengiriman</p>
                 @endif
             </div>
-
-            <!-- Assign Courier -->
-            @if($order->delivery && $order->delivery->status == 'pending')
-            <div class="bg-white rounded-lg shadow p-6">
-                <h2 class="text-xl font-semibold mb-4">Assign Kurir</h2>
-
-                <form action="{{ route('admin.assign.courier', $order->id) }}" method="POST">
-                    @csrf
-                    <div class="mb-4">
-                        <label for="courier_id" class="block text-sm font-medium text-gray-700 mb-2">Pilih Kurir</label>
-                        <select name="courier_id" id="courier_id" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
-                            <option value="">Pilih Kurir</option>
-                            @foreach($couriers as $courier)
-                                <option value="{{ $courier->id }}">{{ $courier->name }} ({{ $courier->phone }})</option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <button type="submit" class="w-full bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700">
-                        <i class="fas fa-user-plus mr-2"></i>Assign Kurir
-                    </button>
-                </form>
-            </div>
-            @endif
         </div>
     </div>
 </div>

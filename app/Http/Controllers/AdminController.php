@@ -13,6 +13,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class AdminController extends Controller
 {
@@ -26,20 +27,18 @@ class AdminController extends Controller
     {
         $totalOrders = Order::count();
         $totalProducts = Product::count();
-        $pendingOrders = Order::where('status', 'pending')->count();
-        $recentOrders = Order::with('user')->orderBy('created_at', 'desc')->take(5)->get();
+        $pendingDeliveries = Delivery::where('status', 'pending')->count();
+        $recentOrders = Order::with(['user', 'delivery'])->orderBy('created_at', 'desc')->take(5)->get();
 
         // Statistik pengiriman
-        $pendingDeliveries = Delivery::where('status', 'pending')->count();
         $activeDeliveries = Delivery::whereIn('status', ['assigned', 'picked_up', 'on_way'])->count();
         $completedDeliveries = Delivery::where('status', 'delivered')->count();
 
         return view('admin.dashboard', compact(
             'totalOrders',
             'totalProducts',
-            'pendingOrders',
-            'recentOrders',
             'pendingDeliveries',
+            'recentOrders',
             'activeDeliveries',
             'completedDeliveries'
         ));
@@ -75,8 +74,17 @@ class AdminController extends Controller
         $product->description = $request->description;
 
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('product_images', 'public');
-            $product->image = $imagePath;
+            try {
+                // Coba upload ke direktori baru
+                $imagePath = $request->file('image')->store('product_images', 'public');
+                $product->image = $imagePath;
+
+                // Log untuk debugging
+                Log::info('Image uploaded successfully: ' . $imagePath);
+            } catch (\Exception $e) {
+                Log::error('Image upload failed: ' . $e->getMessage());
+                return redirect()->back()->with('error', 'Gagal mengupload gambar: ' . $e->getMessage())->withInput();
+            }
         }
 
         $product->save();
@@ -106,12 +114,20 @@ class AdminController extends Controller
         $product->description = $request->description;
 
         if ($request->hasFile('image')) {
-            // Hapus gambar lama jika ada
-            if ($product->image) {
-                Storage::delete('public/'.$product->image);
+            try {
+                // Hapus gambar lama jika ada
+                if ($product->image) {
+                    Storage::delete('public/'.$product->image);
+                }
+                $imagePath = $request->file('image')->store('product_images', 'public');
+                $product->image = $imagePath;
+
+                // Log untuk debugging
+                Log::info('Image updated successfully: ' . $imagePath);
+            } catch (\Exception $e) {
+                Log::error('Image update failed: ' . $e->getMessage());
+                return redirect()->back()->with('error', 'Gagal mengupload gambar: ' . $e->getMessage())->withInput();
             }
-            $imagePath = $request->file('image')->store('product_images', 'public');
-            $product->image = $imagePath;
         }
 
         $product->save();
@@ -122,94 +138,26 @@ class AdminController extends Controller
     // Manajemen Pesanan
     public function orders()
     {
-        $orders = Order::with(['user', 'details.product', 'delivery.courier'])
+        $orders = Order::with(['user', 'details.product', 'delivery'])
             ->orderBy('created_at', 'desc')
             ->paginate(15);
 
-        $couriers = User::where('role', 'courier')->get();
-
-        return view('admin.orders.index', compact('orders', 'couriers'));
+        return view('admin.orders.index', compact('orders'));
     }
 
     public function orderDetail($id)
     {
-        $order = Order::with(['user', 'details.product', 'delivery.courier'])->findOrFail($id);
-        $couriers = User::where('role', 'courier')->get();
+        $order = Order::with(['user', 'details.product', 'delivery'])->findOrFail($id);
 
-        return view('admin.orders.detail', compact('order', 'couriers'));
+        return view('admin.orders.detail', compact('order'));
     }
 
-    public function updateOrderStatus(Request $request, $id)
-    {
-        $order = Order::findOrFail($id);
-        $oldStatus = $order->status;
-        $order->status = $request->status;
-        $order->save();
-
-        // Jika status berubah menjadi 'processing', kirim notifikasi ke semua kurir
-        if ($request->status == 'processing' && $oldStatus != 'processing') {
-            $this->notifyCouriersForDelivery($order);
-        }
-
-        return redirect()->back()->with('success', 'Status pesanan diperbarui');
-    }
-
-    // Assign Courier
-    public function assignCourier(Request $request, $orderId)
-    {
-        $request->validate([
-            'courier_id' => 'required|exists:users,id'
-        ]);
-
-        $order = Order::findOrFail($orderId);
-        $delivery = $order->delivery;
-        $oldCourierId = $delivery->courier_id;
-
-        $delivery->courier_id = $request->courier_id;
-        $delivery->status = 'assigned';
-        $delivery->save();
-
-        // Kirim notifikasi ke kurir yang ditugaskan
-        $courier = User::find($request->courier_id);
-        Notification::create([
-            'user_id' => $request->courier_id,
-            'title' => 'Pengiriman Baru Ditugaskan',
-            'message' => 'Anda ditugaskan untuk mengirim pesanan #' . $order->order_number . ' ke ' . $order->user->name,
-            'type' => 'delivery_assigned'
-        ]);
-
-        // Jika ada kurir lama, kirim notifikasi pembatalan
-        if ($oldCourierId && $oldCourierId != $request->courier_id) {
-            Notification::create([
-                'user_id' => $oldCourierId,
-                'title' => 'Pengiriman Dibatalkan',
-                'message' => 'Pengiriman pesanan #' . $order->order_number . ' telah ditugaskan ke kurir lain',
-                'type' => 'delivery_cancelled'
-            ]);
-        }
-
-        return redirect()->back()->with('success', 'Kurir berhasil ditugaskan');
-    }
-
-    // Notifikasi ke semua kurir
-    private function notifyCouriersForDelivery($order)
-    {
-        $couriers = User::where('role', 'courier')->get();
-
-        foreach ($couriers as $courier) {
-            Notification::create([
-                'user_id' => $courier->id,
-                'title' => 'Pengiriman Baru Tersedia',
-                'message' => 'Ada pengiriman baru untuk pesanan #' . $order->order_number . ' dari ' . $order->user->name,
-                'type' => 'new_delivery_available'
-            ]);
-        }
-    }
+    // Method ini dihapus karena status order sekarang diambil dari delivery
 
     // Manajemen Pengiriman
     public function deliveries()
     {
-        $deliveries = Delivery::with(['order.user', 'courier'])
+        $deliveries = Delivery::with(['order.user'])
             ->orderBy('created_at', 'desc')
             ->paginate(15);
 
@@ -218,10 +166,123 @@ class AdminController extends Controller
 
     public function deliveryDetail($id)
     {
-        $delivery = Delivery::with(['order.user', 'order.details.product', 'courier'])
+        $delivery = Delivery::with(['order.user', 'order.details.product'])
             ->findOrFail($id);
 
         return view('admin.deliveries.detail', compact('delivery'));
+    }
+
+    // Update Status Pengiriman (Admin sebagai kurir)
+    public function updateDeliveryStatus(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|in:assigned,picked_up,on_way,delivered,failed',
+            'notes' => 'nullable|string|max:500'
+        ]);
+
+        $delivery = Delivery::findOrFail($id);
+        $oldStatus = $delivery->status;
+        $delivery->status = $request->status;
+        $delivery->notes = $request->notes;
+        $delivery->save();
+
+        // Buat notifikasi untuk customer jika sudah dikirim
+        if ($request->status == 'delivered') {
+            Notification::create([
+                'user_id' => $delivery->order->user_id,
+                'title' => 'Pesanan Dikirim',
+                'message' => 'Pesanan #' . $delivery->order->order_number . ' telah berhasil dikirim',
+                'type' => 'delivery_completed'
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Status pengiriman berhasil diperbarui');
+    }
+
+    // Update status pengiriman ke picked_up (Admin sebagai kurir)
+    public function acceptDelivery($id)
+    {
+        $delivery = Delivery::where('status', 'assigned')
+            ->findOrFail($id);
+
+        $delivery->status = 'picked_up';
+        $delivery->save();
+
+        return redirect()->back()->with('success', 'Pengiriman berhasil diambil');
+    }
+
+    // Daftar pengiriman yang tersedia
+    public function availableDeliveries()
+    {
+        $availableDeliveries = Delivery::where('status', 'assigned')
+            ->with(['order.user', 'order.orderDetails.product'])
+            ->get();
+
+        return view('admin.deliveries.available', compact('availableDeliveries'));
+    }
+
+    // Riwayat pengiriman
+    public function deliveryHistory()
+    {
+        $deliveries = Delivery::with(['order.user', 'order.orderDetails.product'])
+            ->whereIn('status', ['delivered', 'failed'])
+            ->orderBy('updated_at', 'desc')
+            ->paginate(20);
+
+        return view('admin.deliveries.history', compact('deliveries'));
+    }
+
+    // Quick Update Status Pengiriman - Halaman khusus untuk admin di lapangan
+    public function quickUpdateDeliveries()
+    {
+        try {
+            $activeDeliveries = Delivery::with(['order.user'])
+                ->whereIn('status', ['assigned', 'picked_up', 'on_way'])
+                ->orderBy('updated_at', 'desc')
+                ->get();
+
+            Log::info('Quick Update: Found ' . $activeDeliveries->count() . ' active deliveries');
+            return view('admin.deliveries.quick-update', compact('activeDeliveries'));
+        } catch (\Exception $e) {
+            Log::error('Quick Update Error: ' . $e->getMessage());
+            return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
+
+    // Quick Update Status - AJAX endpoint untuk update cepat
+    public function quickUpdateStatus(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|in:assigned,picked_up,on_way,delivered,failed',
+            'notes' => 'nullable|string|max:200'
+        ]);
+
+        $delivery = Delivery::findOrFail($id);
+        $oldStatus = $delivery->status;
+        $delivery->status = $request->status;
+
+        if ($request->notes) {
+            $delivery->notes = $request->notes;
+        }
+
+        $delivery->save();
+
+        // Buat notifikasi untuk customer jika sudah dikirim
+        if ($request->status == 'delivered') {
+            Notification::create([
+                'user_id' => $delivery->order->user_id,
+                'title' => 'Pesanan Dikirim',
+                'message' => 'Pesanan #' . $delivery->order->order_number . ' telah berhasil dikirim',
+                'type' => 'delivery_completed'
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Status pengiriman #' . $delivery->tracking_number . ' berhasil diupdate',
+            'new_status' => $request->status,
+            'status_text' => ucwords(str_replace('_', ' ', $request->status))
+        ]);
     }
 
     // Manajemen Promosi

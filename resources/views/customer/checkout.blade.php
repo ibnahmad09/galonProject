@@ -41,6 +41,27 @@
                 </div>
             </div>
         </div>
+                        <!-- Diskon Tersedia -->
+        <div class="mt-6 md:mt-8">
+            <h3 class="text-base md:text-lg font-bold mb-2 md:mb-4 text-blue-700">Diskon Referral Tersedia</h3>
+            <div id="available_discounts" class="mb-4">
+                <!-- Diskon akan dimuat di sini -->
+            </div>
+            @if(session('referral_discount'))
+                <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h4 class="text-lg font-semibold text-green-800">Diskon Referral Aktif</h4>
+                            <p class="text-green-600">Rp {{ number_format(session('referral_discount')['amount'], 0, ',', '.') }}</p>
+                        </div>
+                        <span class="bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full">
+                            Akan Diterapkan
+                        </span>
+                    </div>
+                </div>
+            @endif
+        </div>
+
         <!-- Metode Pembayaran -->
         <div class="mt-6 md:mt-8">
             <h3 class="text-base md:text-lg font-bold mb-2 md:mb-4 text-blue-700">Metode Pembayaran</h3>
@@ -64,4 +85,75 @@
         </div>
     </form>
 </div>
+
+<script>
+// Load available discounts on page load
+document.addEventListener('DOMContentLoaded', function() {
+    loadAvailableDiscounts();
+});
+
+function loadAvailableDiscounts() {
+    fetch('{{ route("customer.referral.available-discounts") }}', {
+        method: 'GET',
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        const container = document.getElementById('available_discounts');
+        if (data.discounts && data.discounts.length > 0) {
+            let html = '<div class="space-y-2">';
+            data.discounts.forEach(discount => {
+                html += `
+                    <div class="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-lg">
+                        <div>
+                            <p class="font-semibold text-green-800">Diskon Referral</p>
+                            <p class="text-sm text-green-600">Rp ${discount.discount_amount.toLocaleString('id-ID')}</p>
+                        </div>
+                        <button onclick="useDiscount(${discount.id})"
+                                class="bg-green-500 text-white px-4 py-2 rounded text-sm hover:bg-green-600 transition">
+                            Gunakan
+                        </button>
+                    </div>
+                `;
+            });
+            html += '</div>';
+            container.innerHTML = html;
+        } else {
+            container.innerHTML = '<p class="text-gray-500 text-sm">Tidak ada diskon tersedia</p>';
+        }
+    })
+    .catch(error => {
+        console.error('Error loading discounts:', error);
+    });
+}
+
+function useDiscount(discountId) {
+    if (confirm('Apakah Anda yakin ingin menggunakan diskon ini? Diskon akan siap digunakan pada checkout ini.')) {
+        fetch('{{ route("customer.referral.use-discount") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({
+                referral_use_id: discountId
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(`Diskon Rp ${data.data.discount_amount.toLocaleString('id-ID')} siap digunakan!`);
+                location.reload(); // Reload halaman untuk menampilkan diskon aktif
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(error => {
+            alert('Terjadi kesalahan saat menggunakan diskon');
+        });
+    }
+}
+</script>
 @endsection

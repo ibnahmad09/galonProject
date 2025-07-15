@@ -12,7 +12,6 @@ class CreateOrdersTable extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('order_number')->unique();
-            $table->enum('status', ['pending', 'processing', 'delivered', 'cancelled']);
             $table->decimal('total_price', 10, 2);
             $table->string('payment_method');
             $table->text('delivery_address');

@@ -32,26 +32,5 @@ class UserSeeder extends Seeder
             'address' => 'Jl. Customer No. 1',
             'referral_code' => Str::upper(Str::random(8)),
         ]);
-
-        // Create Courier User
-        User::create([
-            'name' => 'Kurir 1',
-            'email' => 'courier1@galon.com',
-            'password' => Hash::make('password'),
-            'role' => 'courier',
-            'phone' => '081234567892',
-            'address' => 'Jl. Kurir No. 1',
-            'referral_code' => Str::upper(Str::random(8)),
-        ]);
-
-        User::create([
-            'name' => 'Kurir 2',
-            'email' => 'courier2@galon.com',
-            'password' => Hash::make('password'),
-            'role' => 'courier',
-            'phone' => '081234567893',
-            'address' => 'Jl. Kurir No. 2',
-            'referral_code' => Str::upper(Str::random(8)),
-        ]);
     }
 }

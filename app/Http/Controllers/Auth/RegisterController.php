@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use Illuminate\Foundation\Auth\RegistersUsers;
+use App\Services\ReferralService;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
+use Illuminate\Validation\Rules;
 
 class RegisterController extends Controller
 {
@@ -22,7 +24,7 @@ class RegisterController extends Controller
     |
     */
 
-    use RegistersUsers;
+    protected $referralService;
 
     /**
      * Where to redirect users after registration.
@@ -36,45 +38,85 @@ class RegisterController extends Controller
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(ReferralService $referralService)
     {
+        $this->referralService = $referralService;
         $this->middleware('guest');
     }
 
-    /**
-     * Get a validator for an incoming registration request.
-     *
-     * @param  array  $data
-     * @return \Illuminate\Contracts\Validation\Validator
-     */
-    protected function validator(array $data)
+    public function showRegistrationForm(Request $request)
     {
-        return Validator::make($data, [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
-        ]);
+        $referralCode = $request->get('ref');
+        return view('auth.register', compact('referralCode'));
     }
 
-    /**
-     * Create a new user instance after a valid registration.
-     *
-     * @param  array  $data
-     * @return \App\Models\User
-     */
-    protected function create(array $data)
+    public function register(Request $request)
     {
-        // Generate referral code unik
-        do {
-            $referralCode = Str::upper(Str::random(8));
-        } while (\App\Models\User::where('referral_code', $referralCode)->exists());
-
-        return User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
-            'referral_code' => $referralCode,
-            'referred_by' => $data['referred_by'] ?? null,
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'phone' => ['required', 'string', 'max:15'],
+            'address' => ['required', 'string'],
+            'referral_code' => ['nullable', 'string', 'max:8']
         ]);
+
+        // Check if referral code is valid
+        $referrer = null;
+        if ($request->filled('referral_code')) {
+            $referrer = $this->referralService->validateReferralCode($request->referral_code);
+            if (!$referrer) {
+                return back()->withErrors(['referral_code' => 'Kode referral tidak valid']);
+            }
+        }
+
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role' => 'customer',
+            'phone' => $request->phone,
+            'address' => $request->address,
+            'referred_by' => $referrer ? $referrer->referral_code : null,
+        ]);
+
+        // Generate referral code for new user
+        $user->generateReferralCode();
+
+        // Apply referral discount if referral code was used
+        if ($referrer) {
+            $settings = $this->referralService->getActiveSettings();
+            if ($settings && $settings->is_active) {
+                // Create referral use record for referred user (will be used on first order)
+                \App\Models\ReferralUse::create([
+                    'referrer_id' => $referrer->id,
+                    'referred_id' => $user->id,
+                    'order_id' => null,
+                    'discount_amount' => $settings->referred_discount_amount,
+                    'referrer_discount_amount' => 0,
+                    'referred_discount_amount' => $settings->referred_discount_amount,
+                    'type' => 'referred_used',
+                    'is_used' => false // Will be used on first order
+                ]);
+
+                // Create referral use record for referrer (earned discount)
+                \App\Models\ReferralUse::create([
+                    'referrer_id' => $referrer->id,
+                    'referred_id' => $user->id,
+                    'order_id' => null,
+                    'discount_amount' => $settings->referrer_discount_amount,
+                    'referrer_discount_amount' => $settings->referrer_discount_amount,
+                    'referred_discount_amount' => 0,
+                    'type' => 'referrer_earned',
+                    'is_used' => false // Can be used anytime
+                ]);
+            }
+        }
+
+        event(new Registered($user));
+
+        Auth::login($user);
+
+        return redirect()->route('customer.dashboard');
     }
 }

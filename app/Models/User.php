@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\ReferralUse;
 
 class User extends Authenticatable
 {
@@ -61,5 +62,49 @@ class User extends Authenticatable
     public function notifications()
     {
         return $this->hasMany(Notification::class);
+    }
+
+    public function referrals()
+    {
+        return $this->hasMany(User::class, 'referred_by');
+    }
+
+    public function referrer()
+    {
+        return $this->belongsTo(User::class, 'referred_by');
+    }
+
+    public function referralUsesAsReferrer()
+    {
+        return $this->hasMany(ReferralUse::class, 'referrer_id');
+    }
+
+    public function referralUsesAsReferred()
+    {
+        return $this->hasMany(ReferralUse::class, 'referred_id');
+    }
+
+    /**
+     * Generate unique referral code
+     */
+    public function generateReferralCode()
+    {
+        do {
+            $code = strtoupper(substr(md5(uniqid()), 0, 8));
+        } while (static::where('referral_code', $code)->exists());
+
+        $this->update(['referral_code' => $code]);
+        return $code;
+    }
+
+    /**
+     * Get referral code or generate if not exists
+     */
+    public function getReferralCode()
+    {
+        if (!$this->referral_code) {
+            $this->generateReferralCode();
+        }
+        return $this->referral_code;
     }
 }

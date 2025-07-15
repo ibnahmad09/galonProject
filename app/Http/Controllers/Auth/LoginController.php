@@ -30,8 +30,6 @@ class LoginController extends Controller
     {
         if (Auth::user()->role == 'admin') {
             return '/admin/dashboard';
-        } elseif (Auth::user()->role == 'courier') {
-            return '/courier/dashboard';
         } else {
             return '/customer/dashboard';
         }

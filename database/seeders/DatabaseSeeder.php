@@ -24,7 +24,8 @@ class DatabaseSeeder extends Seeder
             ProductSeeder::class,
             UpdateProductsCategorySeeder::class,
             NewsSeeder::class,
-            DeliverySeeder::class
+            DeliverySeeder::class,
+            ReferralSettingSeeder::class
         ]);
     }
 }

@@ -50,11 +50,32 @@ class CartController extends Controller
     public function updateCart(Request $request)
     {
         $cart = session()->get('cart');
-        foreach ($request->quantities as $id => $quantity) {
-            $cart[$id]['quantity'] = $quantity;
+
+        if ($request->isJson()) {
+            // Handle JSON request untuk auto-save
+            $quantities = $request->input('quantities', []);
+            foreach ($quantities as $id => $quantity) {
+                if (isset($cart[$id])) {
+                    $cart[$id]['quantity'] = (int)$quantity;
+                }
+            }
+            session()->put('cart', $cart);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Keranjang diperbarui'
+            ]);
+        } else {
+            // Handle form request biasa
+            foreach ($request->quantities as $id => $quantity) {
+                if (isset($cart[$id])) {
+                    $cart[$id]['quantity'] = (int)$quantity;
+                }
+            }
+            session()->put('cart', $cart);
+
+            return redirect()->back()->with('success', 'Keranjang diperbarui');
         }
-        session()->put('cart', $cart);
-        return redirect()->back()->with('success', 'Keranjang diperbarui');
     }
 
     public function cart()

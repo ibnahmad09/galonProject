@@ -109,4 +109,17 @@ class CustomerController extends Controller
         $item = \App\Models\News::findOrFail($id);
         return view('customer.news_show', compact('item'));
     }
+
+    // Tracking Pengiriman
+    public function tracking($trackingNumber)
+    {
+        $delivery = \App\Models\Delivery::with(['order.user', 'order.details.product'])
+            ->where('tracking_number', $trackingNumber)
+            ->whereHas('order', function($query) {
+                $query->where('user_id', Auth::id());
+            })
+            ->first();
+
+        return view('customer.tracking', compact('delivery'));
+    }
 }

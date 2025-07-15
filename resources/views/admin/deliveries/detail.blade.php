@@ -173,40 +173,65 @@
                 </div>
             </div>
 
-            <!-- Informasi Kurir -->
+            <!-- Update Status Pengiriman -->
             <div class="bg-white rounded-lg shadow p-6">
-                <h2 class="text-xl font-semibold mb-4">Informasi Kurir</h2>
+                <h2 class="text-xl font-semibold mb-4">Update Status Pengiriman</h2>
 
-                @if($delivery->courier)
-                    <div class="space-y-3">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Nama Kurir</label>
-                            <p class="text-sm text-gray-900">{{ $delivery->courier->name }}</p>
+                @if(in_array($delivery->status, ['assigned', 'picked_up', 'on_way']))
+                    <form action="{{ route('admin.delivery.updateStatus', $delivery->id) }}" method="POST">
+                        @csrf
+                        <div class="mb-4">
+                            <label for="status" class="block text-sm font-medium text-gray-700 mb-2">Status Baru</label>
+                            <select name="status" id="status" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                                <option value="assigned" {{ $delivery->status == 'assigned' ? 'selected' : '' }}>
+                                    Assigned
+                                </option>
+                                <option value="picked_up" {{ $delivery->status == 'picked_up' ? 'selected' : '' }}>
+                                    Picked Up
+                                </option>
+                                <option value="on_way" {{ $delivery->status == 'on_way' ? 'selected' : '' }}>
+                                    On The Way
+                                </option>
+                                <option value="delivered" {{ $delivery->status == 'delivered' ? 'selected' : '' }}>
+                                    Delivered
+                                </option>
+                                <option value="failed" {{ $delivery->status == 'failed' ? 'selected' : '' }}>
+                                    Failed
+                                </option>
+                            </select>
                         </div>
 
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Email</label>
-                            <p class="text-sm text-gray-900">{{ $delivery->courier->email }}</p>
+                        <div class="mb-4">
+                            <label for="notes" class="block text-sm font-medium text-gray-700 mb-2">Catatan (Opsional)</label>
+                            <textarea name="notes" id="notes" rows="3"
+                                      class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                      placeholder="Tambahkan catatan pengiriman...">{{ $delivery->notes }}</textarea>
                         </div>
 
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Telepon</label>
-                            <p class="text-sm text-gray-900">{{ $delivery->courier->phone }}</p>
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700">Alamat</label>
-                            <p class="text-sm text-gray-900">{{ $delivery->courier->address }}</p>
-                        </div>
+                        <button type="submit" class="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
+                            <i class="fas fa-save mr-2"></i>
+                            Update Status
+                        </button>
+                    </form>
+                @elseif($delivery->status == 'pending')
+                    <div class="text-center py-4">
+                        <i class="fas fa-clock text-yellow-400 text-3xl mb-2"></i>
+                        <p class="text-gray-500 text-sm mb-3">Pengiriman masih pending</p>
+                        <form action="{{ route('admin.delivery.accept', $delivery->id) }}" method="POST" class="inline">
+                            @csrf
+                            <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 text-sm">
+                                <i class="fas fa-check mr-2"></i>
+                                Terima Pengiriman
+                            </button>
+                        </form>
                     </div>
                 @else
                     <div class="text-center py-4">
-                        <i class="fas fa-user-slash text-gray-400 text-3xl mb-2"></i>
-                        <p class="text-gray-500 text-sm">Belum ada kurir yang ditugaskan</p>
-                        <a href="{{ route('admin.order.detail', $delivery->order->id) }}"
-                           class="mt-3 inline-block bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 text-sm">
-                            Assign Kurir
-                        </a>
+                        <i class="fas fa-check-circle text-green-400 text-3xl mb-2"></i>
+                        <p class="text-gray-500 text-sm">Pengiriman sudah selesai</p>
+                        <p class="text-sm text-gray-400 mt-1">
+                            Status: {{ ucwords(str_replace('_', ' ', $delivery->status)) }}
+                        </p>
                     </div>
                 @endif
             </div>

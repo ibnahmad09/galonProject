@@ -35,8 +35,26 @@
             <input id="password-confirm" type="password" name="password_confirmation" required class="w-full px-4 py-2 border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none">
         </div>
         <div>
-            <label for="referred_by" class="block text-blue-800 font-semibold mb-1">Kode Referral (opsional)</label>
-            <input id="referred_by" type="text" name="referred_by" value="{{ old('referred_by') }}" class="w-full px-4 py-2 border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none">
+            <label for="phone" class="block text-blue-800 font-semibold mb-1">Nomor Telepon</label>
+            <input id="phone" type="text" name="phone" value="{{ old('phone') }}" required class="w-full px-4 py-2 border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none">
+            @error('phone')
+                <span class="text-red-500 text-xs">{{ $message }}</span>
+            @enderror
+        </div>
+        <div>
+            <label for="address" class="block text-blue-800 font-semibold mb-1">Alamat Lengkap</label>
+            <textarea id="address" name="address" required class="w-full px-4 py-2 border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none" rows="3">{{ old('address') }}</textarea>
+            @error('address')
+                <span class="text-red-500 text-xs">{{ $message }}</span>
+            @enderror
+        </div>
+        <div>
+            <label for="referral_code" class="block text-blue-800 font-semibold mb-1">Kode Referral (opsional)</label>
+            <input id="referral_code" type="text" name="referral_code" value="{{ old('referral_code', $referralCode ?? '') }}" class="w-full px-4 py-2 border border-blue-200 rounded-lg focus:ring-2 focus:ring-blue-400 focus:outline-none" placeholder="Masukkan kode referral jika ada">
+            @error('referral_code')
+                <span class="text-red-500 text-xs">{{ $message }}</span>
+            @enderror
+            <p class="text-xs text-blue-600 mt-1">Dapatkan diskon Rp 10.000 untuk order pertama Anda!</p>
         </div>
         <button type="submit" class="w-full py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow transition">Daftar</button>
     </form>

@@ -3,9 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Admin - Depot Air Minum</title>
     @vite('resources/css/app.css')
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/alpinejs@2.8.2/dist/alpine.min.js"></script>
+    @yield('head')
 </head>
 <body class="bg-gray-100">
     <div x-data="{ sidebarOpen: false }" class="h-screen flex flex-col md:flex-row">
@@ -45,6 +48,18 @@
                     </a>
                 </li>
                 <li class="mb-2">
+                    <a href="{{ route('admin.deliveries') }}"
+                       class="{{ request()->routeIs('admin.deliveries*') ? 'bg-blue-700' : '' }} block p-3 rounded hover:bg-blue-700">
+                        Pengiriman
+                    </a>
+                </li>
+                <li class="mb-2">
+                    <a href="{{ route('admin.deliveries.quick-update') }}"
+                       class="{{ request()->routeIs('admin.deliveries.quick-update') ? 'bg-blue-700' : '' }} block p-3 rounded hover:bg-blue-700">
+                        ⚡ Quick Update
+                    </a>
+                </li>
+                <li class="mb-2">
                     <a href="{{ route('admin.promotions') }}"
                        class="{{ request()->routeIs('admin.promotions*') ? 'bg-blue-700' : '' }} block p-3 rounded hover:bg-blue-700">
                         Promosi
@@ -62,6 +77,12 @@
                         Laporan
                     </a>
                 </li>
+                <li class="mb-2">
+                    <a href="{{ route('admin.referral-settings.index') }}"
+                       class="{{ request()->routeIs('admin.referral-settings*') ? 'bg-blue-700' : '' }} block p-3 rounded hover:bg-blue-700">
+                        Pengaturan Referral
+                    </a>
+                </li>
             </ul>
             <form method="POST" action="{{ route('logout') }}" class="mt-8">
                 @csrf
@@ -76,5 +97,7 @@
             @yield('content')
         </div>
     </div>
+
+    @yield('scripts')
 </body>
 </html>

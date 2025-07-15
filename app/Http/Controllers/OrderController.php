@@ -9,6 +9,8 @@ use App\Models\Product;
 use App\Models\StockMutation;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Delivery;
+use App\Models\ReferralUse;
+use App\Services\ReferralService;
 use Midtrans\Snap;
 use Midtrans\Config;
 
@@ -28,6 +30,21 @@ class OrderController extends Controller
             $totalPrice += $item['price'] * $item['quantity'];
         }
 
+                        // Apply available referral discount from session
+        $sessionDiscount = session('referral_discount');
+        if ($sessionDiscount) {
+            $totalPrice -= $sessionDiscount['amount'];
+            // Mark discount as used
+            $referralUse = ReferralUse::find($sessionDiscount['id']);
+            if ($referralUse) {
+                $referralUse->update([
+                    'is_used' => true,
+                    'order_id' => null // Will be updated after order is created
+                ]);
+            }
+            session()->forget('referral_discount');
+        }
+
         // Simpan ke database
         $order = new Order();
         $order->user_id = Auth::id();
@@ -35,8 +52,13 @@ class OrderController extends Controller
         $order->total_price = $totalPrice;
         $order->payment_method = $request->payment_method;
         $order->delivery_address = $request->delivery_address;
-        $order->status = 'pending';
         $order->save();
+
+        // Apply first order discount if user was referred
+        $referralService = new ReferralService();
+        $referralService->applyFirstOrderDiscount($order);
+
+
 
         foreach ($cartItems as $itemId => $item) {
             $product = Product::find($itemId);
@@ -52,8 +74,19 @@ class OrderController extends Controller
         $delivery = new Delivery();
         $delivery->order_id = $order->id;
         $delivery->tracking_number = 'TRK-' . uniqid();
-        $delivery->status = 'pending';
+        $delivery->status = 'assigned';
         $delivery->save();
+
+        // Buat notifikasi untuk admin bahwa ada pesanan baru siap dikirim
+        $adminUsers = \App\Models\User::where('role', 'admin')->get();
+        foreach ($adminUsers as $admin) {
+            \App\Models\Notification::create([
+                'user_id' => $admin->id,
+                'title' => 'Pesanan Baru Siap Dikirim',
+                'message' => 'Pesanan #' . $order->order_number . ' telah siap untuk dikirim',
+                'type' => 'new_order_ready'
+            ]);
+        }
 
         if ($request->payment_method == 'Midtrans') {
             // Konfigurasi Midtrans

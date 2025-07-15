@@ -86,8 +86,7 @@ POST /admin/orders/{orderId}/assign-courier - Assign kurir
 - `cancelled` - Dibatalkan
 
 ### Delivery Status
-- `pending` - Menunggu kurir
-- `assigned` - Diterima kurir
+- `assigned` - Siap dikirim (status default saat pesanan dibuat)
 - `picked_up` - Barang diambil
 - `on_way` - Dalam perjalanan
 - `delivered` - Berhasil dikirim
@@ -96,16 +95,15 @@ POST /admin/orders/{orderId}/assign-courier - Assign kurir
 ## Fitur Notifikasi
 
 ### Jenis Notifikasi
-1. **new_delivery_available** - Pengiriman baru tersedia
+1. **new_order_ready** - Pesanan baru siap dikirim (otomatis saat pesanan dibuat)
 2. **delivery_assigned** - Kurir ditugaskan
 3. **delivery_cancelled** - Pengiriman dibatalkan
 4. **delivery_status_updated** - Status pengiriman diupdate
 5. **delivery_completed** - Pengiriman selesai
 
 ### Trigger Notifikasi
-- Status pesanan berubah ke 'processing'
-- Kurir di-assign ke pengiriman
-- Kurir update status pengiriman
+- Status delivery langsung ke 'assigned' saat pesanan dibuat
+- Admin update status pengiriman
 - Pengiriman selesai
 
 ## Cara Penggunaan

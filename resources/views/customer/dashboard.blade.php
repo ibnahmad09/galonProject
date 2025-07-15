@@ -10,7 +10,7 @@
 
     <div class="container mx-auto flex flex-col md:flex-row items-center justify-between gap-12 relative z-10">
         <div class="flex-1 max-w-xl">
-            <h1 class="text-4xl md:text-5xl font-extrabold text-blue-900 mb-4 leading-tight">Air Mineral Berkualitas Tinggi</h1>
+            <h1 class="text-4xl md:text-5xl font-extrabold text-blue-900 mb-4 leading-tight">Air Mineral</h1>
             <p class="text-lg md:text-xl text-blue-900/80 mb-8">Dari Dapur, bukan dari pabrik iklan karena air segar tidak harus mahal.</p>
             <div class="flex flex-col sm:flex-row gap-3">
                 <a href="#produk" class="bg-blue-700 hover:bg-blue-800 text-white font-semibold px-6 py-3 rounded shadow text-center transition">Pesan Sekarang</a>
@@ -464,7 +464,12 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
         @foreach($news->take(3) as $item)
         <div class="relative bg-white border border-blue-100 rounded-2xl shadow-sm hover:shadow-xl hover:scale-[1.03] transition-all flex flex-col px-7 py-7 mx-auto min-h-[260px]">
-            <span class="absolute top-5 right-5 bg-blue-50 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full border border-blue-100 shadow-sm">{{ $item->published_at ? date('d M Y', strtotime($item->published_at)) : '' }}</span>
+            <span class="absolute top-5 right-5 bg-blue-50 text-blue-700 text-xs font-semibold px-3 py-1 rounded-full border border-blue-100 shadow-sm">
+                {{ $item->published_at ? date('d M Y', strtotime($item->published_at)) : '' }}
+            </span>
+            @if($item->image)
+                <img src="{{ asset('uploads/' . $item->image) }}" alt="{{ $item->title }}" class="w-full h-40 object-cover rounded-lg mb-4">
+            @endif
             <h3 class="text-lg md:text-xl font-extrabold mb-3 text-blue-700 leading-snug line-clamp-2">{{ $item->title }}</h3>
             <p class="text-sm text-gray-700 flex-1 mb-4 line-clamp-4">{{ ($item->content) }}</p>
         </div>
